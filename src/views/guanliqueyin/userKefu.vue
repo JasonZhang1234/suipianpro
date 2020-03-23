@@ -1,0 +1,138 @@
+<template>
+    <section class="box_userKefu">
+         <div class="van-doc-demo-block">
+            <van-radio-group v-model="radio">
+                <van-cell-group v-for="(i,index) in list" :key="index">
+                    <van-cell :title="i.name" clickable @click="radio = i">
+                        <van-radio slot="right-icon" :name="i" />
+                    </van-cell>
+                </van-cell-group>
+            </van-radio-group>
+        </div>
+        <van-goods-action>
+            <van-goods-action-button type="warning" text="返回" @click="onClickButton(0)"/>
+            <van-goods-action-button type="danger" text="确认" @click="onClickButton(1)" />
+        </van-goods-action>
+    </section>
+</template>
+<script>
+import { getUserKefuList,postExclusiveConfirm } from "@/api/api"
+import vMaskpage from "@/components/maskpage"
+import Modal from "@/components/Modal"
+import Bus from '@/common/js/bus.js';  
+    export default {
+        props:['check'],
+        components:{
+            vMaskpage,
+            Modal
+        },
+        data(){
+            return {
+                list:[],
+                userList:[],
+                radio:"",
+                params:{
+                    "fragId":"",       
+                    "personId": "",
+                }
+            }
+        },
+        created(){
+            this.childView = false
+            this.request()  
+        },
+        mounted(){
+            console.log(this.check)
+            this.radio = this.check.personId
+        },
+        methods:{
+            /**
+             * 获取任务列表
+             */
+            request(){
+                getUserKefuList(this.params).then(res =>{
+                    this.list = res.data.data
+                    console.log(res);
+                    this.loading = false;
+                    this.isLoading = false;
+
+                }).catch(err =>{
+                    console.log(err)
+                })
+            },
+            /** 
+             * 提交事件
+            */
+            onClickButton(item){
+                console.log(this.radio);
+                if(item){
+                    Bus.$emit('chindFn', this.radio);
+                    //调用提交事件
+                    // this.http() 
+                }else{
+                    Bus.$emit('chindFn', 0); 
+                }
+            },
+        },
+        http(){
+            postExclusiveConfirm(this.params).then(res =>{
+                if(res.data.code == 0){
+                    this.list = res.data.data
+                    this.$dialog.alert({
+                        title: '提示',
+                        message: '提交成功'
+                    }).then(() => {
+                        console.log('提交成功')
+                        //关闭遮罩层
+                        Bus.$emit('chindFn', 0); 
+                    });
+                }
+                console.log(res);
+                this.loading = false;
+                this.isLoading = false;
+            }).catch(err =>{
+                console.log(err)
+            })
+        },
+        //keepalive 生命周期
+        activated(){
+            this.childView = false;
+        },
+        beforeDestroy(){
+            this.childView = false;
+        },
+        //销毁前
+        beforeDestroy(){
+            // alert(1)
+        },
+        //销毁后
+        destroyed(){
+            // alert(2)
+        },
+        beforeRouteLeave(to, from, next) {
+            // 设置下一个路由的 meta
+            //to.meta.keepAlive = false;  // B 跳转到 A 时，让 A 缓存，即不刷新
+            next();
+        }
+    }
+</script>
+<style lang="less" scoped>
+.van-cell__value--alone{
+    text-align: center!important;
+}
+.van_cell_center{
+    text-align: center;
+}
+.box_userKefu  {
+    // padding: 0 0 80px 0;
+    .van-doc-demo-block{
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 60px;
+        overflow: auto;
+        top: 0;
+    }
+}
+</style>
+

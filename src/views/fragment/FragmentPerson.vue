@@ -24,7 +24,7 @@
                 <div class="triangle-topright" style="border-top: 45px solid #ccc;" v-else-if="i.isOpen=='0'">
                     <div class="word">未开放</div>
                 </div>
-                <van-checkbox v-model="i.status" @click="checkboxClick()" :disabled="!i.status" shape="square" v-else-if="i.isOpen=='1'&&i.isFinish=='0'">{{i.status}}</van-checkbox>
+                <van-checkbox v-model="i.status" @click="checkboxClick()" :disabled="!i.status" shape="square" v-else-if="i.isOpen=='1'&&i.isFinish=='0'"></van-checkbox>
                 <!-- <span class="checkFiexd"></span> -->
                 <!-- //isOpen是否开放 0-未开放 1-开放 2-已过期
                     //"isFinish"是否已完成 0-未完成 1-完成  -->
@@ -36,12 +36,11 @@
             <div class="logo-wrapper">
                 <div class="logo" >
                     <van-icon name="shopping-cart" size="30" color="#999" @click="shoppingCartShow">
-                        <div class="van-info" style="padding:0.08rem 0.08rem;min-width:.6rem;" v-if="newList.length">{{newList.length}}</div>
-
+                        <div class="van-info" style="padding:0.08rem 0.08rem;min-width:.6rem;" v-if="newList.length" >{{this.newList.filter((item)=>item.status).length}}</div>
                     </van-icon>
                 </div>
             </div>
-            <van-button color="linear-gradient(to right, #4bb0ff, #6149f6)" class="shop-cart-wrapper-btn">提交</van-button>
+            <van-button color="linear-gradient(to right, #4bb0ff, #6149f6)" class="shop-cart-wrapper-btn" @click="saveClick()">提交</van-button>
         </div>
     </div>
    <van-popup
@@ -58,10 +57,7 @@
             <van-panel title="主管：" :desc="i.supervisor" />
             <van-panel title="完成时间：" :desc="i.showTimeName" />
             <van-panel title="碎片性质：" :desc="i.typeName" />
-            {{i.parents.status}}
             <van-goods-action>
-                <!-- <van-goods-action-icon icon="cart-o" text="购物车" info="5" />
-                <van-goods-action-icon icon="shop-o" text="店铺" info="12" /> -->
                 <van-goods-action-button type="warning" text="返回" @click="onClickButton(0,i)" />
                 <van-goods-action-button type="danger" text="选择" @click="onClickButton(1,i)" v-if="!i.parents.status&&i.status"/>
             </van-goods-action>
@@ -70,8 +66,7 @@
     <!-- 购物车内部 -->
     <van-popup v-model="shoppingCart" :style="{ maxHeight: '50%',width:'100%'}" position="bottom" :z-index=90>
         <div class="van-doc-demo-block">
-            <h2 class="van-doc-demo-block__title" style="background:#ebedf0;">碎片包 <span style="color:blue;float:right;">重要事项</span> <span style="color:blue;float:right;" @click="clearClick()">清空</span></h2>
-            <van-checkbox-group v-model="checkboxGroup" ref="checkboxGroup">
+            <h2 class="van-doc-demo-block__title" style="background:#ebedf0;">碎片包 <span style="color:blue;float:right;margin-right:5px;" @click="clearClick()"> 清空 </span> <span style="color:blue;float:right;margin-right:10px;" @click="remarkShowClick()"> 重要事项 </span> </h2>
             <van-cell-group>
                 <van-cell
                 v-for="(item, index) in newList"
@@ -81,25 +76,36 @@
                 @click="toggle(index)"
                 v-show="item.status"
                 >
-                    <van-checkbox slot="right-icon" :name="index" ref="checkboxes" />
+                    <van-checkbox slot="right-icon" @click="checkboxClick()" v-model="item.status"/>
                 </van-cell>
             </van-cell-group>
-        </van-checkbox-group>
+            <van-cell v-if="params.details" :title="params.details" style="line-height: inherit;border-top:10px rgba(200,200,200,0.2) solid;">
+                <!-- 使用 right-icon 插槽来自定义右侧图标 -->
+                <template #right-icon>
+                    <van-icon
+                    name="clear"
+                    size="20"
+                    @click="clearDetailsClick()"
+                    />
+                </template>
+                </van-cell>
         </div>
         
     </van-popup>
+    
     <van-popup v-model="fragmentremarkShow" :style="{ height: '100%',width:'100%'}" position="right" :z-index=200>
-        <v-fragmentremark v-if="fragmentremarkShow">
+        <v-fragmentremark v-if="fragmentremarkShow" :message="params.details">
 
-        </v-fragmentremark>
+    </v-fragmentremark>
     </van-popup>
     </section>
 </template>
 <script>
-import { getFragmentPersonalList,getFragmentDetail } from "@/api/api"
+import { getFragmentPersonalList,getFragmentDetail,postFragmentPersonalSave } from "@/api/api"
 import vFragmentremark from "@/views/fragment/Fragmentremark"
 import vMaskpage from "@/components/maskpage"
 import Modal from "@/components/Modal"
+import Bus from '@/common/js/bus.js'
     export default {
         components:{
             vMaskpage,
@@ -130,23 +136,11 @@ import Modal from "@/components/Modal"
                 scrollOptions: {
                     click: false,
                     directionLockThreshold: 0
+                },
+                params:{    
+                    "fragIds":"",//字符串以 ","分隔
+                    "details":""//可选
                 }
-            }
-        },
-        computed: {
-            seller() {
-                return this.data.seller
-            },
-            selectFoods() {
-                let foods = []
-                this.goods.forEach((good) => {
-                good.foods.forEach((food) => {
-                    if (food.count) {
-                        foods.push(food)
-                    }
-                })
-                })
-                return foods
             }
         },
         watch: {
@@ -157,24 +151,18 @@ import Modal from "@/components/Modal"
                 immediate: true
             }
         },
-        computed:{
-        //   newList:function(){
-        //       console.log("computed")
-        //        if(this.shoppingCartListWatch.length) {
-        //            return this.shoppingCartListWatch;
-        //        }
-        //        //改变this的指向
-        //         var _this = this;
-        //         return this.shoppingCartListWatch.filter(function(item){
-        //           return item.status;          
-        //        });
-        //     }
-        },
         created(){
             this.request()
             this.childView = false
         },
         mounted(){
+            Bus.$on('remarkOkShow', target => {
+                this.params.details = target
+                this.fragmentremarkShow = false 
+            });
+            Bus.$on('remarkCancelShow', target => {
+                this.fragmentremarkShow = false 
+            });
         },
         methods:{
             /**
@@ -186,11 +174,6 @@ import Modal from "@/components/Modal"
                 console.log(this.oneClassStyl)
                 this.twoClassVal = i.privs
                 this.threeClassVal = i.privs[0].privs
-                // i.privs.forEach(e =>{
-                // })
-                // this.list.forEach(element => {
-                    
-                // });
             },
             /**
              * 二级分类
@@ -198,10 +181,11 @@ import Modal from "@/components/Modal"
             twoClassClick(i,index){
                 this.twoClassStyl = index
                 console.log(this.twoClassStyl)
+                // debugger;
                 this.threeClassVal = []
                 i.privs.forEach(e => {
                     e.status = false
-                    this.threeClassVal == i.privs
+                    this.threeClassVal.push(e)
                 });
             },
             /**
@@ -238,10 +222,8 @@ import Modal from "@/components/Modal"
                         // t.status = false
                         this.threeClassVal.push(t)
                     })
-                    
                     this.loading = false;
                     this.isLoading = false;
-
                 }).catch(err =>{
                     console.log(err)
                 })
@@ -270,6 +252,28 @@ import Modal from "@/components/Modal"
                 })
             },
             /** 
+             * 提交碎片
+            */
+            FragmentPersonalSave(){
+                postFragmentPersonalSave(this.params).then(res =>{
+                    console.log('res', res.data.data)
+                    if(res.data.code){
+                        this.$dialog.alert({
+                            title: '提示',
+                            message: '提交成功'
+                        }).then(() => {
+                            console.log('提交成功')
+                            //返回到上一页(不需要可删除)
+                            this.$router.go(-1)
+                        });
+                    }
+                    this.loading = false;
+                    this.isLoading = false;
+                }).catch(err =>{
+                    console.log(err)
+                })
+            },
+            /** 
              * 选择/返回
             */
             onClickButton(index,item){
@@ -277,7 +281,6 @@ import Modal from "@/components/Modal"
                     var msg = 1
                     console.log('item', item.parents)
                     item.parents.status = true
-                    // item.status = false
                     this.shoppingCartListWatch.forEach(e => {
                         if(e.fragId == item.parents.fragId){
                             msg = 0
@@ -285,16 +288,50 @@ import Modal from "@/components/Modal"
                     });
                     if(msg){
                         this.shoppingCartListWatch.push(item.parents)
-                        this.newList = this.shoppingCartListWatch.filter((item)=>item.status)
                     }
+                    this.newList = this.shoppingCartListWatch.filter((item)=>item.status)
                 }
                 this.show = false;
                 console.log(this.shoppingCartList)
-                //  var obj = {};
-                //  arr = arr.reduce(function(item, next) {
-                //    obj[next.key] ? '' : obj[next.key] = true && item.push(next);
-                //    return item;
-                // }, []);
+            },
+            /** 
+             * 清除备注
+            */
+            clearDetailsClick(){
+                console.log()
+                this.params.details = ""
+            },
+            /** 
+             * 提交
+            */
+            saveClick(){
+                //防止重复提交
+                this.params.fragIds = ""
+                if(!this.newList.filter((item)=>item.status).length){
+                    this.$dialog.alert({
+                        title: '提示',
+                        message: '请选择碎片'
+                    }).then(() => {
+                        return false
+                    });
+                }
+                this.newList.forEach(e => {
+                    if(e.status){
+                        this.params.fragIds += e.fragId+","
+                    }
+                });
+                if (this.params.fragIds.length > 0) {
+                    this.params.fragIds = this.params.fragIds.substr(0, this.params.fragIds.length - 1);
+                }
+                console.log(this.params)
+                //调用提交保存
+                this.FragmentPersonalSave()
+            },
+            /** 
+             * 备注 开/关
+            */
+            remarkShowClick(){
+              this.fragmentremarkShow = true;
             },
             toggle(index) {
                 this.$refs.checkboxes[index].toggle();
@@ -315,26 +352,12 @@ import Modal from "@/components/Modal"
                 console.log('newList', this.newList)
                 this.newList = this.newList.filter((item)=>item.status)
             },
+            //清空
             clearClick(){
-                this.newList = []
                 this.newList.forEach(e => {
                     e.status = false
                 });
-            },
-            childLink(deployId){
-                this.childData = {
-                    "deployId":deployId,
-                    "msg":0
-                };
-                this.childView = true;
-
-            },
-            /**
-             * 关闭按钮
-             */
-            close(data){
-                console.log(data)
-                this.childView = false;
+                this.newList = []
             },
         },
         //keepalive 生命周期
@@ -343,12 +366,10 @@ import Modal from "@/components/Modal"
         },
         beforeDestroy(){
             this.childView = false;
-
         },
         //销毁前
         beforeDestroy(){
             // alert(1)
-
         },
         //销毁后
         destroyed(){
@@ -371,13 +392,14 @@ section{
     flex-direction:row;
     color: #535151;
     font-size: 14px;
+    padding:0 0 56px 0;
     .tree{
         // background: red;
         width: 25%;
         height: 100%;
         padding: 5px;
         border-right:#c8c9cc 2px solid;
-        
+        overflow: auto;
         li{
             // :nth-child(3){
             //     padding: 10px 30px 10px 0;
@@ -448,10 +470,10 @@ section{
     display: inline-block;
     width: 45px;
     right: 0;
-    top: -40px;
+    top: -45px;
     color: #FFF;
     transform-origin: bottom center;
-    transform: rotate(45deg);
+    transform: rotate(50deg);
     font-size: 12px;
     text-overflow: ellipsis;
     overflow: hidden;

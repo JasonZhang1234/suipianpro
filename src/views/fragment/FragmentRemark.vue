@@ -13,8 +13,8 @@
         <van-goods-action>
             <!-- <van-goods-action-icon icon="cart-o" text="购物车" info="5" />
             <van-goods-action-icon icon="shop-o" text="店铺" info="12" /> -->
-            <van-goods-action-button type="blue" text="返回" @click="onClickButton(0,i)" />
-            <van-goods-action-button text="保存" color="linear-gradient(to right, #4bb0ff, #6149f6)" @click="onClickButton(1,i)" />
+            <van-goods-action-button type="blue" text="返回" @click="onClickButton(0)" />
+            <van-goods-action-button text="保存" color="linear-gradient(to right, #4bb0ff, #6149f6)" @click="onClickButton(1)" />
         </van-goods-action>
     </section>
 </template>
@@ -22,35 +22,33 @@
 import { getDeploytList } from "@/api/api"
 import vMaskpage from "@/components/maskpage"
 import Modal from "@/components/Modal"
+import Bus from '@/common/js/bus.js';  
+
     export default {
+        props:["message"],
         components:{
             vMaskpage,
             Modal
         },
         data(){
             return {
-                message:""
+                data:""
             }
         },
         created(){
-            this.childView = false
         },
         mounted(){
-
+            console.log(this.message)
         },
         methods:{
-            /**
-             * 获取任务列表
-             */
-            request(){
-                getDeploytList(this.params).then(res =>{
-                    
-                    this.loading = false;
-                    this.isLoading = false;
-
-                }).catch(err =>{
-                    console.log(err)
-                })
+            onClickButton(item){
+                if(item){
+                    Bus.$emit('remarkOkShow',this.message);
+                    //调用提交事件
+                    // this.http() 
+                }else{
+                    Bus.$emit('remarkCancelShow', 0); 
+                }
             }
         },
     }

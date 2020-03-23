@@ -2,28 +2,15 @@
     <section>
     <!-- 碎片领用 -->
         <div>
-            <div class="van-doc-demo-block">
-                <h2 class="van-doc-demo-block__title"> 通用碎片包</h2>
-                <van-radio-group v-model="radio">
-                    <van-cell-group>
-                        <van-cell title="单选框 1" clickable @click="radio = '1'">
-                        <van-radio slot="right-icon" name="1" />
-                        </van-cell>
-                        <van-cell title="单选框 2" clickable @click="radio = '2'">
-                        <van-radio slot="right-icon" name="2" />
-                        </van-cell>
-                    </van-cell-group>
-                </van-radio-group>
-            </div>
              <div class="van-doc-demo-block">
-                <h2 class="van-doc-demo-block__title"> 岗位碎片包</h2>
-                <van-checkbox-group v-model="result">
+                <h2 class="van-doc-demo-block__title"> 临时碎片申请</h2>
+                <van-checkbox-group v-model="result" max=2>
                     <van-cell-group>
                         <van-cell
                         v-for="(item, index) in list"
                         clickable
                         :key="item"
-                        :title="`复选框 ${item}`"
+                        :title="`${item.packageName}`"
                         @click="toggle(index)"
                         >
                         <van-checkbox slot="right-icon" :name="item" ref="checkboxes" />
@@ -31,16 +18,21 @@
                     </van-cell-group>
                 </van-checkbox-group>
             </div>
+             <van-field
+                required
+                disabled
+                placeholder="最多选择两个岗位碎片包"
+            />
             <!-- 提交 -->
             <div  class="div_btn">
-                <van-button color="#b72435" block>提交</van-button>
+                <van-button color="#b72435" block @click="saveClick()" :disabled="btnDisabled">提交</van-button>
 
             </div>
         </div>
     </section>
 </template>
 <script>
-import { getDeploytList } from "../api/api"
+import { getFragmentTempView,getFragmentTempApply,getFragmentTempCheck } from "@/api/api"
 import vMaskpage from "@/components/maskpage"
 import Modal from "@/components/Modal"
     export default {
@@ -51,14 +43,15 @@ import Modal from "@/components/Modal"
         data(){
             return {
                 checked: true,
-                list: ['a', 'b'],//多选框数据
+                list: [],//多选框数据
                 result: [], //多选框数据
-                radio: true //单选框
+                radio: true, //单选框
+                btnDisabled:true//可以提交申请 不能提交申请
             }
         },
         created(){
             this.childView = false
-
+            this.request()
         },
         mounted(){
 
@@ -71,77 +64,48 @@ import Modal from "@/components/Modal"
              * 获取任务列表
              */
             request(){
-                getDeploytList(this.params).then(res =>{
-                    console.log(res);
-
-                    if(res.data.rows.length){
-                        // 加载状态结束
-                        this.list= res.data.rows
-                    }else{
-                        this.finished = true; 
-                    }
-                    if(res.data.total/10 < 1){
-                        this.finished = true; 
+                getFragmentTempView(this.params).then(res =>{
+                    if(res.data.code == 0){
+                        this.list = res.data.data
                     }
                     this.loading = false;
                     this.isLoading = false;
-
+                }).catch(err =>{
+                    console.log(err)
+                })
+                //临时碎片包申请权限查看
+                getFragmentTempCheck().then(res =>{
+                    if(res.data.code == 0){
+                        if(res.data.data){
+                            this.btnDisabled = false
+                        }
+                    }
                 }).catch(err =>{
                     console.log(err)
                 })
             },
-            /**
-             * 下拉刷新
-             */
-            onRefresh() {
-                setTimeout(() => {
-                    this.$toast('刷新成功');
-                    this.params.page = 1;
-                    this.request();
-                }, 500);
+            /** 
+             * 提交按钮
+            */
+            saveClick(){
+                //提交选中的碎片包
+                console.log('tag', this.result)
+                getFragmentTempApply({"packageIds":  this.result[0].packageId+','+this.result[1].packageId}).then(res =>{
+                    if(res.data.code == 0){
+                        this.$dialog.alert({
+                            title: '提示',
+                            message: '提交成功'
+                        }).then(() => {
+                            console.log('提交成功')
+                            //需要做返回
+                            this.$router.go(-1)
+                        });
+                    }
+                    console.log('res', res.data.data)
+                }).catch(err =>{
+                    console.log(err)
+                })
             },
-            /**
-             * 上拉加载
-             */
-            onLoad() {
-                // 异步更新数据
-                setTimeout(() => {
-                    this.params.page++
-                    this.request();
-                }, 500);
-            },
-            childLink(deployId){
-                this.childData = {
-                    "deployId":deployId,
-                    "msg":0
-                };
-                this.childView = true;
-
-            },
-            /**
-             * 关闭按钮
-             */
-            close(data){
-                console.log(data)
-                this.childView = false;
-            },
-        },
-        //keepalive 生命周期
-        activated(){
-            this.childView = false;
-        },
-        beforeDestroy(){
-            this.childView = false;
-
-        },
-        //销毁前
-        beforeDestroy(){
-            // alert(1)
-
-        },
-        //销毁后
-        destroyed(){
-            // alert(2)
         },
         beforeRouteLeave(to, from, next) {
             // 设置下一个路由的 meta
@@ -158,7 +122,6 @@ import Modal from "@/components/Modal"
     right:0;
     bottom:0;
     padding:0 15px 15px 15px;
-
 }
 </style>
 

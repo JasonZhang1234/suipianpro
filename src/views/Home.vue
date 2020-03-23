@@ -37,16 +37,32 @@
     </div>
 </template>
 <script>
+import { getMenuView } from "@/api/api"
 export default {
   data() {
     return {
       checked: false,
-      value: 5
+      value: 5,
+      params:{
+
+      }
     };
   },
   // 注意：组件挂载后才能访问到 ref 对象
   mounted() {
     // this.$refs.checkbox.toggle();
-  }
+  },
+  created(){
+      this.request()
+  },
+  methods: {
+      request(){
+        getMenuView(this.params).then(res =>{
+            console.log(res)
+        }).catch(err =>{
+            console.log(err)
+        })
+      }
+  },
 }
 </script>

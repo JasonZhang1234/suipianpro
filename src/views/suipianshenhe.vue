@@ -1,14 +1,27 @@
 <template>
     <section>
-    碎片审核
-    <van-panel title="申请碎片包名称" desc="申请时间" status="状态">
+        <van-tabs @click="onTabClick">
+            <van-tab title="待审批"></van-tab>
+            <van-tab title="已审批"></van-tab>
+        </van-tabs>
+        <van-cell :title="选择日期" is-link center style="text-align:center;margin: 10px 0 0 0;" @click="showPicker = true"/>
+        <van-popup v-model="showPicker" position="bottom">
+            <van-datetime-picker
+                v-model="currentDate"
+                type="date"
+                :min-date="minDate"
+                @confirm="onConfirm"
+                @cancel="showPicker = false"
+            />
+        </van-popup>
+    <van-panel title="申请碎片包名称" desc="申请人" status="03:28">
         <!-- <div>申请碎片包名称</div> -->
         <div slot="footer" class="panel_footer">
             <van-button size="small">确定</van-button>
             <van-button size="small" type="danger">驳回</van-button>
         </div>
     </van-panel>
-    <van-panel title="申请碎片包名称" desc="申请时间" status="状态">
+    <van-panel title="申请碎片包名称" desc="申请人" status="02:28">
         <!-- <div>申请碎片包名称</div> -->
         <div slot="footer" class="panel_footer">
             <van-button size="small">确定</van-button>
@@ -28,6 +41,11 @@ import Modal from "@/components/Modal"
         },
         data(){
             return {
+                showPicker:false,
+                value:"",
+                minDate: new Date(),
+                maxDate: new Date(2025, 10, 1),
+                currentDate: new Date()
             }
 
         },
@@ -61,6 +79,14 @@ import Modal from "@/components/Modal"
                 }).catch(err =>{
                     console.log(err)
                 })
+            },
+            onTabClick(name, title) {
+                console.log(name,title)
+            },
+            onConfirm(time) {
+                this.value = time;
+                console.log(time.getTime())
+                this.showPicker = false;
             },
             /**
              * 下拉刷新
@@ -97,6 +123,14 @@ import Modal from "@/components/Modal"
                 console.log(data)
                 this.childView = false;
             },
+            formatter(type, val) {
+                if (type === 'year') {
+                    return `${val}年`;
+                } else if (type === 'month') {
+                    return `${val}月`
+                }
+                return val;
+                }
         },
         //keepalive 生命周期
         activated(){

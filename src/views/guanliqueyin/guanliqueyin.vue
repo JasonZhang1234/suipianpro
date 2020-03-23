@@ -1,6 +1,5 @@
 <template>
     <section>
-        管理确认
         <van-grid clickable :column-num="2">
             <van-grid-item icon="home-o" text="排班表" to="/queren" />
             <van-grid-item icon="search" text="独立碎片分发" to="/fenfa" />
