@@ -121,9 +121,33 @@ export default new Router({
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ '@/views/xinxi'),
+      component: () => import(/* webpackChunkName: "about" */ '@/views/notice/xinxi'),
       meta: {
         title: '信息',
+        keepAlive:true
+      }
+    },
+    {
+      path: '/noticeDetails',
+      name: 'noticeDetails',
+      // route level code-splitting
+      // this generates a separate chunk (about.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import(/* webpackChunkName: "about" */ '@/views/notice/details'),
+      meta: {
+        title: '信息详情',
+        keepAlive:true
+      }
+    },
+    {
+      path: '/noticeDetailsRemark',
+      name: 'noticeDetailsRemark',
+      // route level code-splitting
+      // this generates a separate chunk (about.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import(/* webpackChunkName: "about" */ '@/views/notice/remark'),
+      meta: {
+        title: '信息详情',
         keepAlive:true
       }
     },

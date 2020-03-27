@@ -43,8 +43,14 @@ export const getFragmentTempCheck= params => { return axios.get(`/fsms/mobile/fr
 export const getFragmentTempApply= params => { return axios.get(`/fsms/mobile/fragment/temp/apply`, { params: params }); };
 //碎片提交
 export const postFragmentPersonalSave= params => { return axios.get(`/fsms/mobile/fragment/personal/finish/save`, { params: params }); };
-
-
+//临时碎片包审批查看
+export const getApprovalView = params => { return axios.get(`/fsms/mobile/fragment/temp/approval/view`, { params: params }); };
+//临时碎片包审批
+export const postApprovalSave = params => { return axios.get(`/fsms/mobile/fragment/temp/approval/save`, { params: params }); };
+//消息列表
+export const getNoticeList = params => { return axios.get(`/fsms/mobile/notice/list/view`, { params: params }); };
+//消息列表详情
+export const getNoticeDetail = params => { return axios.get(`/fsms/mobile/notice/detail/view`, { params: params }); };
 
 
 

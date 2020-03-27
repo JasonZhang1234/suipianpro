@@ -90,7 +90,6 @@
                 </template>
                 </van-cell>
         </div>
-        
     </van-popup>
     
     <van-popup v-model="fragmentremarkShow" :style="{ height: '100%',width:'100%'}" position="right" :z-index=200>
