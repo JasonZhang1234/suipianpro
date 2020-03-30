@@ -78,6 +78,11 @@ import Modal from "@/components/Modal"
                     if(res.data.code == 0){
                         if(res.data.data){
                             this.btnDisabled = false
+                        }else{
+                            this.$dialog.alert({
+                                title: '提示',
+                                message: res.data.msg
+                            }).then(() => {});
                         }
                     }
                 }).catch(err =>{

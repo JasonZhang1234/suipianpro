@@ -3,8 +3,8 @@
          <div class="van-doc-demo-block">
             <van-radio-group v-model="radio">
                 <van-cell-group v-for="(i,index) in list" :key="index">
-                    <van-cell :title="i.name" clickable @click="radio = i">
-                        <van-radio slot="right-icon" :name="i" />
+                    <van-cell :title="i.name" clickable @click="radio = i.personId">
+                        <van-radio slot="right-icon" :name="i.personId" />
                     </van-cell>
                 </van-cell-group>
             </van-radio-group>
@@ -43,11 +43,12 @@ import Bus from '@/common/js/bus.js';
         },
         mounted(){
             console.log(this.check)
+            this.params.fragId = this.check.fragId
             this.radio = this.check.personId
         },
         methods:{
             /**
-             * 获取任务列表
+             * 获取客服列表
              */
             request(){
                 getUserKefuList(this.params).then(res =>{
@@ -66,33 +67,48 @@ import Bus from '@/common/js/bus.js';
             onClickButton(item){
                 console.log(this.radio);
                 if(item){
-                    Bus.$emit('chindFn', this.radio);
+                    // Bus.$emit('chindFn', this.radio);
                     //调用提交事件
-                    // this.http() 
+                    if(this.radio){
+                        this.params.personId = this.radio
+                        this.exclusiveConfirm() 
+                    }else{
+                        this.$dialog.alert({
+                            title: '提示',
+                            message: '请选择人员!'
+                        }).then(() => {});
+                    }
                 }else{
                     Bus.$emit('chindFn', 0); 
                 }
+               
             },
-        },
-        http(){
-            postExclusiveConfirm(this.params).then(res =>{
-                if(res.data.code == 0){
-                    this.list = res.data.data
-                    this.$dialog.alert({
-                        title: '提示',
-                        message: '提交成功'
-                    }).then(() => {
-                        console.log('提交成功')
-                        //关闭遮罩层
-                        Bus.$emit('chindFn', 0); 
-                    });
-                }
-                console.log(res);
-                this.loading = false;
-                this.isLoading = false;
-            }).catch(err =>{
-                console.log(err)
-            })
+            exclusiveConfirm(){
+                postExclusiveConfirm(this.params).then(res =>{
+                    if(!res.data.code){
+                        this.$dialog.alert({
+                            title: '提示',
+                            message: '提交成功'
+                        }).then(() => {
+                            console.log('提交成功')
+                            //关闭遮罩层
+                            Bus.$emit('chindFn', this.radio); 
+                        });
+                    }else{
+                        this.$dialog.alert({
+                            title: '提示',
+                            message: '提交失败，请从新提交！'
+                        }).then(() => {
+                            console.log('提交失败')
+                        });
+                    }
+                    console.log(res);
+                    this.loading = false;
+                    this.isLoading = false;
+                }).catch(err =>{
+                    console.log(err)
+                })
+            },
         },
         //keepalive 生命周期
         activated(){

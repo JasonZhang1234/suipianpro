@@ -22,13 +22,13 @@
         </van-popup>
     </div>
     <div class="btn">
-        <van-button type="primary" block color="linear-gradient(to right, #4bb0ff, #6149f6)">返回</van-button>
+        <van-button type="primary" block color="linear-gradient(to right, #4bb0ff, #6149f6)" @click="$router.go(-1)">返回</van-button>
 
     </div>
     </section>
 </template>
 <script>
-import { getFragmentPersonalList,getFragmentDetail,getFragmentExclusiveList,getFragmentExclusiveHistory } from "@/api/api"
+import { getFragmentPersonalList,getFragmentDetail,getFragmentExclusiveList,getFragmentExclusiveHistory,postExclusiveConfirm } from "@/api/api"
 import vUserKefu from "@/views/guanliqueyin/userkefu"
 import Bus from '@/common/js/bus.js'; 
 import vMaskpage from "@/components/maskpage"
@@ -56,10 +56,9 @@ import Modal from "@/components/Modal"
         mounted(){
             Bus.$on('chindFn', target => {  
                 console.log(target);
-                if(target.name){
+                if(target){
                     //调用排班表历史信息
                     this.fragmentExclusiveHistory()
-                    this.userKefuShow = false
                 }
                 this.userKefuShow = false  
             });  
@@ -134,7 +133,6 @@ import Modal from "@/components/Modal"
                     var msg = 1
                     console.log('item', item.parents)
                     item.parents.status = true
-                    // item.status = false
                     this.shoppingCartListWatch.forEach(e => {
                         if(e.fragId == item.parents.fragId){
                             msg = 0
@@ -159,8 +157,6 @@ import Modal from "@/components/Modal"
             //控制打开购物车内部
             shoppingCartShow(){
                 this.shoppingCart=true
-                console.log(this.$refs.checkboxGroup)
-                // this.$refs.checkboxGroup.toggleAll(true);
                 setTimeout(()=>{
                     this.$refs.checkboxGroup.toggleAll(true);
 

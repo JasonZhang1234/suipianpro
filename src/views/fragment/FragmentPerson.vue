@@ -3,29 +3,29 @@
     <div class="box_tree">
         <!-- {{newList}} -->
         <div class="tree">
-            <li @click="oneClassClick(i,index)" v-for="(i,index) in oneClassVal" :key="index" :class="oneClassStyl==index?'van-sidebar-item van-sidebar-item--select van-tree-select__nav-item':''">
+            <li @click="oneClassClick(i,index)" v-for="(i,index) in oneClassVal" :key="index" v-if="i.fragName" :class="oneClassStyl==index?'van-sidebar-item van-sidebar-item--select van-tree-select__nav-item':''">
                 <p>{{i.fragName}}</p>
             </li>
         </div>
         <div class="tree" >
-            <li @click="twoClassClick(i,index)" v-for="(i,index) in twoClassVal" :key="index" :class="twoClassStyl==index?'van-sidebar-item van-sidebar-item--select van-tree-select__nav-item':''">
+            <li @click="twoClassClick(i,index)" v-for="(i,index) in twoClassVal" :key="index" v-if="i.fragName" :class="twoClassStyl==index?'van-sidebar-item van-sidebar-item--select van-tree-select__nav-item':''">
                 <p>{{i.fragName}}</p>
             </li>
         </div>
         <div class="tree">
             <li  v-for="(i,index) in threeClassVal" :key="index" :class="threeClassStyl==index?'van-sidebar-item van-sidebar-item--select van-tree-select__nav-item':''">
                 <p @click="threeClassClick(i,index)">{{i.fragName}}</p>
-                <div class="triangle-topright" style="border-top: 45px solid red;" v-if="i.isFinish=='0'&&i.isOpen=='2'">
+                <div class="triangle-topright" style="border-top: 1.2rem solid red;" v-if="i.isFinish=='0'&&i.isOpen=='2'">
                     <div class="word">未完成</div>
                 </div>
-                <div class="triangle-topright" style="border-top: 45px solid blue;" v-else-if="i.isOpen=='1'&&i.isFinish=='1'||i.isOpen=='2'&&i.isFinish=='1'">
+                <div class="triangle-topright" style="border-top: 1.2rem solid blue;" v-else-if="i.isOpen=='1'&&i.isFinish=='1'||i.isOpen=='2'&&i.isFinish=='1'">
                     <div class="word">已完成</div>
                 </div>
-                <div class="triangle-topright" style="border-top: 45px solid #ccc;" v-else-if="i.isOpen=='0'">
+                <div class="triangle-topright" style="border-top: 1.2rem solid #ccc;" v-else-if="i.isOpen=='0'">
                     <div class="word">未开放</div>
                 </div>
-                <van-checkbox v-model="i.status" @click="checkboxClick()" :disabled="!i.status" shape="square" v-else-if="i.isOpen=='1'&&i.isFinish=='0'"></van-checkbox>
-                <!-- <span class="checkFiexd"></span> -->
+                <van-checkbox v-model="i.status" @click="checkboxClick()" :disabled="!i.status" shape="square" v-else-if="i.status"></van-checkbox>
+                <!-- <span class="checkFiexd"></span>i.isOpen=='1'&&i.isFinish=='0' -->
                 <!-- //isOpen是否开放 0-未开放 1-开放 2-已过期
                     //"isFinish"是否已完成 0-未完成 1-完成  -->
             </li>
@@ -72,7 +72,7 @@
                 v-for="(item, index) in newList"
                 clickable
                 :key="index"
-                :title="`${item.fragName+item.status}`"
+                :title="`${item.fragName}`"
                 @click="toggle(index)"
                 v-show="item.status"
                 >
@@ -403,6 +403,9 @@ section{
             // :nth-child(3){
             //     padding: 10px 30px 10px 0;
             // }
+            .triangle-topright .word{
+                transform: scale(.9) rotate(45deg);
+            }
             padding: 10px 0;
             p{
                 padding:0 5Px;
@@ -430,6 +433,10 @@ section{
             font-size: 16px;
             min-height:40px;
             position: relative;
+            padding: 0;
+            >p{
+                padding:10px 0;
+            }
             .checkFiexd{
                     height: 100%;
                     width: 50px;
@@ -467,9 +474,8 @@ section{
     margin: auto;
     position: absolute;
     display: inline-block;
-    width: 45px;
-    right: 0;
-    top: -45px;
+    right: 5px;
+    top: -40px;
     color: #FFF;
     transform-origin: bottom center;
     transform: rotate(50deg);

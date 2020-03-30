@@ -7,8 +7,8 @@
             </van-cell-group>
         </div>
         <van-goods-action>
-            <van-goods-action-button type="warning" text="添加" @click="onClickButton" disabled/>
-            <van-goods-action-button type="danger" text="确认" @click="onClickButton" />
+            <van-goods-action-button type="warning" text="添加" @click="onClickButton(0)"/>
+            <van-goods-action-button type="danger" text="确认" @click="onClickButton(1)" />
         </van-goods-action>
     </section>
 </template>
@@ -51,8 +51,22 @@ import { getRosterList } from "@/api/api"
             /** 
              * 添加/提交
             */
-            onClickButton(){
-
+            onClickButton(item){
+                if(item){
+                    this.$dialog.alert({
+                        title: '提示',
+                        message: '确定成功'
+                    }).then(() => {
+                        this.$router.go(-1)
+                    });
+                }else{
+                    this.$dialog.alert({
+                        title: '提示',
+                        message: '功能尚未开放'
+                    }).then(() => {
+                        console.log('功能尚未开放')
+                    });
+                }
             }
         },
         //keepalive 生命周期

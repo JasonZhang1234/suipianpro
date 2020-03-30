@@ -52,7 +52,7 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ '@/views/fragment/FragmentPerson'),
       meta: {
         title: '碎片查看',
-        keepAlive:true
+        keepAlive: false
       }
     },
     {
@@ -64,7 +64,7 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ '@/views/guanliqueyin/guanliqueyin'),
       meta: {
         title: '管理确认',
-        keepAlive:true
+        keepAlive:false
       }
     },
     {
@@ -76,7 +76,7 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ '@/views/guanliqueyin/queren'),
       meta: {
         title: '排班表确认',
-        keepAlive:true
+        keepAlive:false
       }
     },
     {
@@ -88,7 +88,7 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ '@/views/guanliqueyin/fenfa'),
       meta: {
         title: '排他性碎片分发',
-        keepAlive:true
+        keepAlive:false
       }
     },
     {
@@ -100,7 +100,7 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ '@/views/shuipianlingyong'),
       meta: {
         title: '临时碎片领用',
-        keepAlive:true
+        keepAlive:false
       }
     },
     {
@@ -112,7 +112,7 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ '@/views/suipianshenhe'),
       meta: {
         title: '临时碎片审核',
-        keepAlive:true
+        keepAlive:false
       }
     },
     {
@@ -124,7 +124,7 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ '@/views/notice/xinxi'),
       meta: {
         title: '信息',
-        keepAlive:true
+        keepAlive:false
       }
     },
     {
@@ -136,7 +136,7 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ '@/views/notice/details'),
       meta: {
         title: '信息详情',
-        keepAlive:true
+        keepAlive:false
       }
     },
     {
@@ -148,7 +148,7 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ '@/views/notice/remark'),
       meta: {
         title: '信息详情',
-        keepAlive:true
+        keepAlive:false
       }
     },
     {

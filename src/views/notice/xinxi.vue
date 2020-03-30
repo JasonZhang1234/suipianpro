@@ -223,10 +223,14 @@ import Modal from "@/components/Modal"
 
         left:70px;
         top:14px;
+        font-size:0.4rem;
     }
 }
 .van-dropdown-menu{
     // flex-direction: row-reverse;
+}
+.van-panel__header-value{
+    color:#333;
 }
 </style>
 
