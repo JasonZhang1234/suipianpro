@@ -8,7 +8,8 @@
             <van-dropdown-item v-model="value2" :options="option2" @change="onDropdownChange"/>
         </van-dropdown-menu>
         <van-panel v-for="(i,index) in list" :title="i.title" :desc="i.senderName" :status="i.noticeDate | isToday" :key="index" @click="onToDetailsClick(i)">
-
+            <!-- 0-未读 1-已读 -->
+            <div class="is_read" v-if="i.isRead == 0">●</div>
         </van-panel>
         <div>
             <van-popup
@@ -231,6 +232,14 @@ import Modal from "@/components/Modal"
 }
 .van-panel__header-value{
     color:#333;
+}
+.is_read{
+    position: absolute;
+    left: 1%;
+    right: 0;
+    top: 20%;
+    font-size: 18px;
+    color: red;
 }
 </style>
 
