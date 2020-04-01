@@ -95,7 +95,21 @@ import Modal from "@/components/Modal"
             saveClick(){
                 //提交选中的碎片包
                 console.log('tag', this.result)
-                getFragmentTempApply({"packageIds":  this.result[0].packageId+','+this.result[1].packageId}).then(res =>{
+                if(this.result.length == 0){
+                    this.$dialog.alert({
+                        title: '提示',
+                        message: '请选择临时碎片'
+                    }).then(() => {});
+                    return  
+                }
+                var packageIds = ""
+                if(this.result.length ==1){
+                    packageIds = this.result[0].packageId
+                }else{
+                    packageIds = this.result[0].packageId+','+this.result[1].packageId
+
+                }
+                getFragmentTempApply({"packageIds": packageIds}).then(res =>{
                     if(res.data.code == 0){
                         this.$dialog.alert({
                             title: '提示',
@@ -105,6 +119,11 @@ import Modal from "@/components/Modal"
                             //需要做返回
                             this.$router.go(-1)
                         });
+                    }else{
+                        this.$dialog.alert({
+                            title: '提示',
+                            message: '提交失败，请从新提交！'
+                        }).then(() => {});
                     }
                     console.log('res', res.data.data)
                 }).catch(err =>{

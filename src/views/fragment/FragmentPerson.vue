@@ -172,6 +172,9 @@ import Bus from '@/common/js/bus.js'
                 console.log(i)
                 console.log(this.oneClassStyl)
                 this.twoClassVal = i.privs
+                this.twoClassStyl = 0
+                this.threeClassStyl = 0
+
                 this.threeClassVal = i.privs[0].privs
             },
             /**
@@ -183,7 +186,9 @@ import Bus from '@/common/js/bus.js'
                 // debugger;
                 this.threeClassVal = []
                 i.privs.forEach(e => {
-                    e.status = false
+                    if(!e.hasOwnProperty('status')){
+                        e.status = false
+                    }
                     this.threeClassVal.push(e)
                 });
             },
@@ -201,28 +206,46 @@ import Bus from '@/common/js/bus.js'
              */
             request(){
                 getFragmentPersonalList(this.params).then(res =>{
-                    console.log(res)
-                    this.list = res.data.data
-                    //一级菜单
-                    res.data.data.forEach(e => {
-                        this.oneClassVal.push(e)
-                        
-                    });
-                    //二级菜单
-                    res.data.data[0].privs.forEach(e =>{
-                        // if(t.firstPrivId == e.fragId){
-                            //     this.twoClassVal.push(e)
-                            // }
-                        this.twoClassVal.push(e)
-                    })
-                    //三级菜单
-                    res.data.data[0].privs[0].privs.forEach(t =>{
-                        this.$set(t,'status',false)
-                        // t.status = false
-                        this.threeClassVal.push(t)
-                    })
-                    this.loading = false;
-                    this.isLoading = false;
+                    if(res.data.code == 0){
+                        if(!res.data.data.length){
+                            this.$dialog.alert({
+                                title: '提示',
+                                message: '您目前尚未分配碎片！'
+                            }).then(() => {
+                                this.$router.go(-1)
+                            });
+                            return false;
+                        }
+                        console.log(res)
+                        this.list = res.data.data
+                        //一级菜单
+                        res.data.data.forEach(e => {
+                            this.oneClassVal.push(e)
+                        });
+                        //二级菜单
+                        res.data.data[0].privs.forEach(e =>{
+                            // if(t.firstPrivId == e.fragId){
+                                //     this.twoClassVal.push(e)
+                                // }
+                            this.twoClassVal.push(e)
+                        })
+                        //三级菜单
+                        res.data.data[0].privs[0].privs.forEach(t =>{
+                            this.$set(t,'status',false)
+                            // t.status = false
+                            this.threeClassVal.push(t)
+                        })
+                        this.loading = false;
+                        this.isLoading = false;
+                    }else{
+                        this.$dialog.alert({
+                            title: '提示',
+                            message: '网络错误请稍后再试！'
+                        }).then(() => {
+                            this.$router.go(-1)
+                        });
+                    }
+
                 }).catch(err =>{
                     console.log(err)
                 })
@@ -255,8 +278,7 @@ import Bus from '@/common/js/bus.js'
             */
             FragmentPersonalSave(){
                 postFragmentPersonalSave(this.params).then(res =>{
-                    console.log('res', res.data.data)
-                    if(res.data.code){
+                    if(res.data.code == 0){
                         this.$dialog.alert({
                             title: '提示',
                             message: '提交成功'
@@ -313,6 +335,8 @@ import Bus from '@/common/js/bus.js'
                     }).then(() => {
                         return false
                     });
+                    return false
+                    
                 }
                 this.newList.forEach(e => {
                     if(e.status){

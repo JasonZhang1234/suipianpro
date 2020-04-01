@@ -1,6 +1,6 @@
 <template>
     <section>
-       <h2 class="van-doc-demo-block__title">{{list.title}}</h2>
+       <h2 class="van-doc-demo-block__title" style="margin-top:10px;">{{list.title}}</h2>
         <van-cell-group v-for="(u,l) in list.content" :key="l">
             <van-cell :value="u.userName+'（ '+ u.fragList.length +' ）'" center style="text-align:center;" :value-class="van_cell_center" is-link @click="onFragListClick(u)"/>
         </van-cell-group>

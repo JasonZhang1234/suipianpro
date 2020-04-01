@@ -1,6 +1,6 @@
 <template>
     <section class="fragmentRemark">
-        <h2>重要事项上报</h2>
+        <h2 style="padding-top:10px;">重要事项上报</h2>
         <div class="tempName">
             <p><span>发件人</span>：{{$route.query.senderName}}</p>
             <p><span>时间</span>：{{list.noticeDate}}</p>

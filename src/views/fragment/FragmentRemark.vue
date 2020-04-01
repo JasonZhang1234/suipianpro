@@ -2,7 +2,7 @@
     <section class="fragmentRemark">
         <h2>重要事项录入</h2>
         <van-field
-            v-model="message"
+            v-model="data"
             rows="8"
             autosize
             show-word-limit
@@ -32,18 +32,19 @@ import Bus from '@/common/js/bus.js';
         },
         data(){
             return {
-                data:""
+                data:"",
+                message:""
             }
         },
         created(){
         },
         mounted(){
-            console.log(this.message)
+            this.data = this.message
         },
         methods:{
             onClickButton(item){
                 if(item){
-                    Bus.$emit('remarkOkShow',this.message);
+                    Bus.$emit('remarkOkShow',this.data);
                     //调用提交事件
                     // this.http() 
                 }else{

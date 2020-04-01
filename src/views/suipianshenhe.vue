@@ -5,7 +5,21 @@
             <van-tab title="已审批"></van-tab>
         </van-tabs>
         <!-- :min-date="minDate" -->
-        <van-cell :title="valDate" is-link center style="text-align:center;margin: 10px 0 0 0;" @click="showPicker = true" v-show="paramsGet.auditStatus != '0'"/>
+        <van-cell :title="valDate" is-link center style="text-align:center;margin: 10px 0 0 0;" @click="showPicker = true" v-show="paramsGet.auditStatus != '0'" icon="clear">
+            <template #title>
+                <span class="custom-title">{{valDate}}</span>
+                <van-icon name="clear" size="20" color="#646566" @click.stop="clearDate" v-if="valDate!='日期选择'" style="line-height: inherit;" />
+            </template>
+            <div>
+                哈
+            </div>
+        </van-cell>
+        <!-- <van-cell :title="valDate" is-link style="text-align:center;margin: 10px 0 0 0;" @click="showPicker = true" v-show="paramsGet.auditStatus != '0'">
+        
+            <template #left-icon>
+                <van-icon name="clear" size="20" color="#646566" @click.stop="clearDate" v-if="valDate!='日期选择'" style="line-height: inherit;"/>
+            </template>
+        </van-cell > -->
         <van-popup v-model="showPicker" position="bottom">
             <van-datetime-picker
                 v-model="currentDate"
@@ -21,8 +35,8 @@
             <div v-show="paramsGet.auditStatus != '0'">审批时间：{{i.auditDate}}</div>
         </div>
         <div slot="footer" class="panel_footer">
-            <van-button size="small" v-if="i.auditStatus==0" @click="onOkClick(i)">通过</van-button>
-            <van-button size="small" type="danger" v-if="i.auditStatus==0" @click="onCancelClick(i)">驳回</van-button>
+            <van-button size="small" type="danger" v-if="i.auditStatus==0" @click="onOkClick(i)">通过</van-button>
+            <van-button size="small" v-if="i.auditStatus==0" @click="onCancelClick(i)">驳回</van-button>
             <van-button plain type="primary" style="border:none;" size="small" v-if="i.auditStatus==1">已通过</van-button>
             <van-button plain type="primary" style="border:none;" size="small" v-if="i.auditStatus==2">已驳回</van-button>
         </div>
@@ -43,7 +57,7 @@ import Modal from "@/components/Modal"
             return {
                 list:[],
                 showPicker:false,
-                valDate:"选择日期",
+                valDate:"日期选择",
                 maxDate: new Date(2025, 10, 1),
                 currentDate: new Date(),
                 paramsGet:{
@@ -114,11 +128,27 @@ import Modal from "@/components/Modal"
                 }else{
                     this.paramsGet.auditStatus = "0"
                 }
+                this.paramsGet.page = 1
+                
+                this.request()
+
             },
             onConfirm(time) {
                 this.valDate = formatDate(time);
                 console.log(time.getTime())
                 this.showPicker = false;
+            },
+
+            /** 
+             * 清除日期
+            */
+            clearDate(){
+                console.log("清除日期");
+                this.valDate='日期选择'
+                this.paramsGet.applyDate = "";
+                //调用接口
+                this.request()
+
             },
             /**
              * 下拉刷新
