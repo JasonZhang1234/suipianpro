@@ -67,28 +67,30 @@
     <van-popup v-model="shoppingCart" :style="{ maxHeight: '50%',width:'100%'}" position="bottom" :z-index=90>
         <div class="van-doc-demo-block">
             <h2 class="van-doc-demo-block__title" style="background:#ebedf0;">碎片包 <span style="color:blue;float:right;margin-right:5px;" @click="clearClick()"> 清空 </span> <span style="color:blue;float:right;margin-right:10px;" @click="remarkShowClick()"> 重要事项 </span> </h2>
-            <van-cell-group>
-                <van-cell
-                v-for="(item, index) in newList"
-                clickable
-                :key="index"
-                :title="`${item.fragName}`"
-                @click="toggle(index)"
-                v-show="item.status"
-                >
-                    <van-checkbox slot="right-icon" @click="checkboxClick()" v-model="item.status"/>
+            <div class="cart_box">
+                <van-cell-group>
+                    <van-cell
+                    v-for="(item, index) in newList"
+                    clickable
+                    :key="index"
+                    :title="`${item.fragName}`"
+                    @click="toggle(index)"
+                    v-show="item.status"
+                    >
+                        <van-checkbox slot="right-icon" @click="checkboxClick()" v-model="item.status"/>
+                    </van-cell>
+                </van-cell-group>
+                <van-cell v-if="params.details" :title="params.details" class="cell_details" >
+                    <!-- 使用 right-icon 插槽来自定义右侧图标 -->
+                    <template #right-icon>
+                        <van-icon
+                        name="clear"
+                        size="20"
+                        @click="clearDetailsClick()"
+                        />
+                    </template>
                 </van-cell>
-            </van-cell-group>
-            <van-cell v-if="params.details" :title="params.details" style="line-height: inherit;border-top:10px rgba(200,200,200,0.2) solid;">
-                <!-- 使用 right-icon 插槽来自定义右侧图标 -->
-                <template #right-icon>
-                    <van-icon
-                    name="clear"
-                    size="20"
-                    @click="clearDetailsClick()"
-                    />
-                </template>
-                </van-cell>
+            </div>
         </div>
     </van-popup>
     
@@ -328,10 +330,10 @@ import Bus from '@/common/js/bus.js'
             saveClick(){
                 //防止重复提交
                 this.params.fragIds = ""
-                if(!this.newList.filter((item)=>item.status).length){
+                if(!this.newList.filter((item)=>item.status).length && !this.params.details){
                     this.$dialog.alert({
                         title: '提示',
-                        message: '请选择碎片'
+                        message: '请选择碎片或添加重要事项'
                     }).then(() => {
                         return false
                     });
@@ -523,6 +525,27 @@ section{
 }
 .van-popup--bottom{
     bottom:55px;
+}
+.cart_box{
+    max-height: 500px;
+    overflow: auto;
+}
+.cell_details{
+    line-height: inherit;
+    border-top:10px rgba(200,200,200,0.2) solid;
+    
+    
+    .van-cell__title{
+            width:80%;
+
+        span{
+            display: inline-block;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            width:80%;
+        }
+    }
 }
 </style>
 <style lang="stylus" scoped>

@@ -5,21 +5,14 @@
             <van-tab title="已审批"></van-tab>
         </van-tabs>
         <!-- :min-date="minDate" -->
-        <van-cell :title="valDate" is-link center style="text-align:center;margin: 10px 0 0 0;" @click="showPicker = true" v-show="paramsGet.auditStatus != '0'" icon="clear">
-            <template #title>
+        <van-cell  is-link center :style="valDate=='日期选择'?'text-align:center':'text-align:right'" @click="showPicker = true" v-show="paramsGet.auditStatus != '0'">
+            <template #title :style="valDate=='日期选择'?'text-align:center':'text-align:right'">
                 <span class="custom-title">{{valDate}}</span>
-                <van-icon name="clear" size="20" color="#646566" @click.stop="clearDate" v-if="valDate!='日期选择'" style="line-height: inherit;" />
             </template>
-            <div>
-                哈
+            <div style="line-height: inherit;text-align: center;padding: 5px 0 0 0;" v-if="valDate!='日期选择'">
+                <van-icon name="clear" size="20" color="#646566" @click.stop="clearDate" v-if="valDate!='日期选择'" style="line-height: inherit;" />
             </div>
         </van-cell>
-        <!-- <van-cell :title="valDate" is-link style="text-align:center;margin: 10px 0 0 0;" @click="showPicker = true" v-show="paramsGet.auditStatus != '0'">
-        
-            <template #left-icon>
-                <van-icon name="clear" size="20" color="#646566" @click.stop="clearDate" v-if="valDate!='日期选择'" style="line-height: inherit;"/>
-            </template>
-        </van-cell > -->
         <van-popup v-model="showPicker" position="bottom">
             <van-datetime-picker
                 v-model="currentDate"
@@ -28,19 +21,30 @@
                 @cancel="showPicker = false"
             />
         </van-popup>
-    <van-panel v-for="(i,index) in list" :key="index" :title="i.packageName" :status="i.applyDate | isToday">
-        <div class="audit_item">
-            <div>申请人：{{i.userName}}</div>
-            <div>编号：{{i.userId}}</div>
-            <div v-show="paramsGet.auditStatus != '0'">审批时间：{{i.auditDate}}</div>
+        <div class="shenhe_list_box" :style="paramsGet.auditStatus==0?'top:40px':'top:90px'">
+            <van-list
+                v-model="loading"
+                :finished="finished"
+                :error.sync="error"
+                error-text="请求失败，点击重新加载"
+                finished-text="没有更多了"
+                @load="onLoad"
+                >
+                <van-panel v-for="(i,index) in list" :key="index" :title="i.packageName" :status="i.applyDate | isToday">
+                    <div class="audit_item">
+                        <div>申请人：{{i.userName}}</div>
+                        <div>编号：{{i.userId}}</div>
+                        <div v-show="paramsGet.auditStatus != '0'">审批时间：{{i.auditDate}}</div>
+                    </div>
+                    <div slot="footer" class="panel_footer">
+                        <van-button size="small" type="danger" v-if="i.auditStatus==0" @click="onOkClick(i)">通过</van-button>
+                        <van-button size="small" v-if="i.auditStatus==0" @click="onCancelClick(i)">驳回</van-button>
+                        <van-button plain type="danger" style="border:none;" size="small" v-if="i.auditStatus==1">已通过</van-button>
+                        <van-button plain type="danger" style="border:none;" size="small" v-if="i.auditStatus==2">已驳回</van-button>
+                    </div>
+                </van-panel>
+            </van-list>
         </div>
-        <div slot="footer" class="panel_footer">
-            <van-button size="small" type="danger" v-if="i.auditStatus==0" @click="onOkClick(i)">通过</van-button>
-            <van-button size="small" v-if="i.auditStatus==0" @click="onCancelClick(i)">驳回</van-button>
-            <van-button plain type="primary" style="border:none;" size="small" v-if="i.auditStatus==1">已通过</van-button>
-            <van-button plain type="primary" style="border:none;" size="small" v-if="i.auditStatus==2">已驳回</van-button>
-        </div>
-    </van-panel>
     </section>
 </template>
 <script>
@@ -56,6 +60,9 @@ import Modal from "@/components/Modal"
         data(){
             return {
                 list:[],
+                error: false,
+                loading: false,
+                finished: false,
                 showPicker:false,
                 valDate:"日期选择",
                 maxDate: new Date(2025, 10, 1),
@@ -71,7 +78,6 @@ import Modal from "@/components/Modal"
                     "auditStatus":""// 2-已通过 3-已驳回  
                 }
             }
-
         },
         created(){
             this.childView = false
@@ -84,22 +90,27 @@ import Modal from "@/components/Modal"
             /**
              * 获取任务列表
              */
-            request(){
+            request(item){
+               
                 getApprovalView(this.paramsGet).then(res =>{
-                    console.log(res);
-                    if(res.data.data.length){
-                        // 加载状态结束
-                        this.list= res.data.data
-                    }else{
-                        this.finished = true; 
-                    }
-                    return 
-                    if(res.data.total/10 < 1){
-                        this.finished = true; 
+                    if(!res.data.code){
+                        console.log(res);
+                        for (let index = 0; index < res.data.data.length; index++) {
+                            const e = res.data.data[index];
+                            console.log(e)
+                            this.list.push(e)
+                        }
                     }
                     this.loading = false;
-                    this.isLoading = false;
-
+                    if(res.data.data.length<10){
+                        console.log("hhah")
+                        this.finished = true; 
+                    }else{
+                        this.$dialog.alert({
+                            title: '提示',
+                            message: res.data.msg
+                        }).then(() => {});
+                    }
                 }).catch(err =>{
                     console.log(err)
                 })
@@ -110,8 +121,14 @@ import Modal from "@/components/Modal"
             http_approvalSave(){
                 console.log('提交')
                 postApprovalSave(this.paramsPost).then(res =>{
-                    if(res.data.code){
+                    if(!res.data.code){
                         console.log('成功+')
+                        this.$router.go(0)
+                    }else{
+                        this.$dialog.alert({
+                            title: '提示',
+                            message: res.data.msg
+                        }).then(() => {});
                     }
                     console.log(res);
                     this.loading = false;
@@ -129,12 +146,13 @@ import Modal from "@/components/Modal"
                     this.paramsGet.auditStatus = "0"
                 }
                 this.paramsGet.page = 1
-                
+                //清空list
+                this.list = []
                 this.request()
-
             },
             onConfirm(time) {
                 this.valDate = formatDate(time);
+                this.paramsGet.applyDate = formatDate(time);
                 console.log(time.getTime())
                 this.showPicker = false;
             },
@@ -146,43 +164,21 @@ import Modal from "@/components/Modal"
                 console.log("清除日期");
                 this.valDate='日期选择'
                 this.paramsGet.applyDate = "";
+                this.paramsGet.page = "1";
                 //调用接口
                 this.request()
 
-            },
-            /**
-             * 下拉刷新
-             */
-            onRefresh() {
-                setTimeout(() => {
-                    this.$toast('刷新成功');
-                    this.params.page = 1;
-                    this.request();
-                }, 500);
             },
             /**
              * 上拉加载
              */
             onLoad() {
                 // 异步更新数据
+                this.loading = true;
                 setTimeout(() => {
                     this.params.page++
                     this.request();
                 }, 500);
-            },
-            childLink(deployId){
-                this.childData = {
-                    "deployId":deployId,
-                    "msg":0
-                };
-                this.childView = true;
-            },
-            /**
-             * 关闭按钮
-             */
-            close(data){
-                console.log(data)
-                this.childView = false;
             },
             formatter(type, val) {
                 getApprovalSave
@@ -278,6 +274,17 @@ import Modal from "@/components/Modal"
 }
 .van-panel .van-cell{
     padding:15px 15px 1px 15px!important;
+}
+.van-panel__header-value{
+    color:#333;
+}
+.shenhe_list_box{
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50px;
+    bottom: 0;
+    overflow: auto;
 }
 </style>
 

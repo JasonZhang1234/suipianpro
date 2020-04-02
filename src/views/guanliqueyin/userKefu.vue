@@ -2,6 +2,10 @@
     <section class="box_userKefu">
          <div class="van-doc-demo-block">
             <van-radio-group v-model="radio">
+                <!-- 暂不分配 -->
+                <van-cell title="暂不分配" clickable @click="radio = '0'" style="margin:0 0 10px 0;">
+                    <van-radio slot="right-icon" name="0" />
+                </van-cell>
                 <van-cell-group v-for="(i,index) in list" :key="index">
                     <van-cell :title="i.name" clickable @click="radio = i.personId">
                         <van-radio slot="right-icon" :name="i.personId" />
@@ -44,7 +48,11 @@ import Bus from '@/common/js/bus.js';
         mounted(){
             console.log(this.check)
             this.params.fragId = this.check.fragId
-            this.radio = this.check.personId
+            if(this.check.personId){
+                this.radio = this.check.personId
+            }else{
+                this.radio = "0"
+            }
         },
         methods:{
             /**
@@ -141,6 +149,7 @@ import Bus from '@/common/js/bus.js';
 }
 .box_userKefu  {
     // padding: 0 0 80px 0;
+    background: #fafafa;
     .van-doc-demo-block{
         position: absolute;
         left: 0;
