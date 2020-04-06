@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { Loading } from 'vant';
+import { Toast } from 'vant';
 // axios.defaults.baseURL = 'http://www.baidu.com/';
 let base = '';
 
@@ -51,12 +53,19 @@ export const postApprovalSave = params => { return axios.get(`/fsms/mobile/fragm
 export const getNoticeList = params => { return axios.get(`/fsms/mobile/notice/list/view`, { params: params }); };
 //消息列表详情
 export const getNoticeDetail = params => { return axios.get(`/fsms/mobile/notice/detail/view`, { params: params }); };
-
-
+//消息未读数
+export const getNoticeCount = params => { return axios.get(`/fsms/mobile/notice/unread/count`, { params: params }); };
 
 //发起请求之前
 axios.interceptors.request.use(
 	config => {
+		// 自定义加载图标
+		Toast.loading({
+			duration: 0, // 持续展示 toast
+			message: '加载中...',
+			forbidClick: true,
+			loadingType: 'spinner'
+		});
 		return config;
 	},
 	err => {
@@ -67,6 +76,7 @@ axios.interceptors.request.use(
 //服务器响应之后
 axios.interceptors.response.use(
 	response => {
+		Toast.clear()
 		//服务器返回token保存到session中
 		if (response.data.token != null) {
 			sessionStorage.setItem('token', response.data.token);

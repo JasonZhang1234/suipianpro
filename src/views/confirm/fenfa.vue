@@ -29,7 +29,7 @@
 </template>
 <script>
 import { getFragmentPersonalList,getFragmentDetail,getFragmentExclusiveList,getFragmentExclusiveHistory,postExclusiveConfirm } from "@/api/api"
-import vUserKefu from "@/views/guanliqueyin/userkefu"
+import vUserKefu from "@/views/confirm/userkefu"
 import Bus from '@/common/js/bus.js'; 
 import vMaskpage from "@/components/maskpage"
 import Modal from "@/components/Modal"

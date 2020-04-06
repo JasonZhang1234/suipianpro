@@ -44,24 +44,24 @@ export default new Router({
       }
     },
     {
-      path: '/fragment',
-      name: 'fragment',
+      path: '/personalFrag',
+      name: 'personalFrag',
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ '@/views/fragment/FragmentPerson'),
+      component: () => import(/* webpackChunkName: "about" */ '@/views/PersonalFrag'),
       meta: {
         title: '碎片查看',
         keepAlive: false
       }
     },
     {
-      path: '/guanliqueyin',
-      name: 'guanliqueyin',
+      path: '/confirm',
+      name: 'confirm',
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ '@/views/guanliqueyin/guanliqueyin'),
+      component: () => import(/* webpackChunkName: "about" */ '@/views/confirm'),
       meta: {
         title: '管理确认',
         keepAlive:false
@@ -73,7 +73,7 @@ export default new Router({
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ '@/views/guanliqueyin/queren'),
+      component: () => import(/* webpackChunkName: "about" */ '@/views/confirm/queren'),
       meta: {
         title: '排班表确认',
         keepAlive:false
@@ -85,46 +85,46 @@ export default new Router({
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ '@/views/guanliqueyin/fenfa'),
+      component: () => import(/* webpackChunkName: "about" */ '@/views/confirm/fenfa'),
       meta: {
         title: '排他性碎片分发',
         keepAlive:false
       }
     },
     {
-      path: '/shuipianlingyong',
-      name: 'shuipianlingyong',
+      path: '/tempFragApply',
+      name: 'tempFragApply',
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ '@/views/shuipianlingyong'),
+      component: () => import(/* webpackChunkName: "about" */ '@/views/TempFragApply'),
       meta: {
         title: '临时碎片领用',
         keepAlive:false
       }
     },
     {
-      path: '/suipianshenhe',
-      name: 'suipianshenhe',
+      path: '/tempFragApprove',
+      name: 'tempFragApprove',
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ '@/views/suipianshenhe'),
+      component: () => import(/* webpackChunkName: "about" */ '@/views/TempFragApprove'),
       meta: {
         title: '临时碎片审核',
         keepAlive:false
       }
     },
     {
-      path: '/xinxi',
-      name: 'xinxi',
+      path: '/message',
+      name: 'message',
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ '@/views/notice/xinxi'),
+      component: () => import(/* webpackChunkName: "about" */ '@/views/message'),
       meta: {
         title: '信息',
-        keepAlive:false
+        keepAlive:true
       }
     },
     {
@@ -133,7 +133,7 @@ export default new Router({
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ '@/views/notice/details'),
+      component: () => import(/* webpackChunkName: "about" */ '@/views/message/details'),
       meta: {
         title: '信息详情',
         keepAlive:false
@@ -145,7 +145,7 @@ export default new Router({
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ '@/views/notice/remark'),
+      component: () => import(/* webpackChunkName: "about" */ '@/views/message/remark'),
       meta: {
         title: '信息详情',
         keepAlive:false

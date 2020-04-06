@@ -142,6 +142,8 @@ import Modal from "@/components/Modal"
                 this.params.noticeDate = formatDate(time);
                 console.log(time.getTime())
                 this.showPicker = false;
+                this.list = []
+                this.params.page = 1
                 //调用接口
                 this.request()
             },
@@ -164,6 +166,8 @@ import Modal from "@/components/Modal"
             onDropdownChange(value){
                 console.log(value)
                 this.params.isRead = value
+                this.list = []
+                this.params.page = 1
                 //调用接口
                 this.request()
             },

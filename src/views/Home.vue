@@ -1,56 +1,40 @@
 <template>
     <div>
-        <van-grid :column-num="3" :gutter="10">
+        <van-image src="https://img.yzcdn.cn/vant/apple-1.jpg" />
+        <van-grid :column-num="3">
             <van-grid-item
+                v-for="(i,index) in list"
+                :key="index"
                 icon="fire"
-                text="碎片查看"
-                to="/fragment"
-            />
-            <van-grid-item
-                icon="fire"
-                text="管理确认"
-                to="/guanliqueyin"
-            />
-            <van-grid-item
-                icon="fire"
-                text="临时碎片领用"
-                to="/shuipianlingyong"
-            />
-            <van-grid-item
-                icon="fire"
-                text="临时碎片审核"
-                to="/suipianshenhe"
-            />
-            <van-grid-item
-                icon="fire"
-                text="信息"
-                to="/xinxi"
-            />
-            <van-grid-item
-                v-for="value in 6"
-                :key="value"
-                icon="fire"
-                text="菜单"
-                to="/guanliqueyin"
-            />
+                :text="i.name"
+                :to="'/'+i.icon"
+                :info="i.name=='消息'?count:''"
+            >
+                <template #icon> 
+                    <i class="iconfont" :class="'icon-'+i.icon" style="font-size: xx-large;color: #646566;"></i>
+                </template>
+            </van-grid-item>
         </van-grid>
     </div>
 </template>
 <script>
-import { getMenuView } from "@/api/api"
+import '@/assets/iconfont/iconfont.css'
+import '@/assets/iconfont/iconfont.js'
+import { getMenuView,getNoticeCount } from "@/api/api"
 export default {
   data() {
     return {
       checked: false,
       value: 5,
+      list:[],
+      count:"",
       params:{
 
       }
     };
   },
-  // 注意：组件挂载后才能访问到 ref 对象
   mounted() {
-    // this.$refs.checkbox.toggle();
+    
   },
   created(){
       this.request()
@@ -58,7 +42,17 @@ export default {
   methods: {
       request(){
         getMenuView(this.params).then(res =>{
-            console.log(res)
+            if(!res.data.code){
+                this.list = res.data.data
+            }
+        }).catch(err =>{
+            console.log(err)
+        })
+        //获取未读消息数
+        getNoticeCount().then(res =>{
+            if(!res.data.code){
+                this.count = res.data.data.count>99?"99+":res.data.data.count
+            }
         }).catch(err =>{
             console.log(err)
         })
@@ -66,3 +60,16 @@ export default {
   },
 }
 </script>
+<style>
+.icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
+}
+</style>
+<style lang="less" scoped>
+
+</style>
+

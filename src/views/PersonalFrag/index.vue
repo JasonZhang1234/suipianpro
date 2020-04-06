@@ -103,7 +103,7 @@
 </template>
 <script>
 import { getFragmentPersonalList,getFragmentDetail,postFragmentPersonalSave } from "@/api/api"
-import vFragmentremark from "@/views/fragment/Fragmentremark"
+import vFragmentremark from "@/views/PersonalFrag/Fragmentremark"
 import vMaskpage from "@/components/maskpage"
 import Modal from "@/components/Modal"
 import Bus from '@/common/js/bus.js'
