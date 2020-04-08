@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { Loading } from 'vant';
 import { Toast } from 'vant';
+import qs from 'qs';
 // axios.defaults.baseURL = 'http://www.baidu.com/';
 let base = '';
 
@@ -55,6 +56,10 @@ export const getNoticeList = params => { return axios.get(`/fsms/mobile/notice/l
 export const getNoticeDetail = params => { return axios.get(`/fsms/mobile/notice/detail/view`, { params: params }); };
 //消息未读数
 export const getNoticeCount = params => { return axios.get(`/fsms/mobile/notice/unread/count`, { params: params }); };
+//loginTemp
+export const loginTemp= params => { return axios.post(`/fsms/login`, qs.stringify(params) , {headers:{'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8','X-Requested-With':'XMLHttpRequest'}}); };
+
+
 
 //发起请求之前
 axios.interceptors.request.use(

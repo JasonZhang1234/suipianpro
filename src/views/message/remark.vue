@@ -7,13 +7,13 @@
         </div>
         <van-field
             v-model="list.content"
-            rows="8"
+            rows="15"
             show-word-limit
             type="textarea"
             style=""
         />
         <div class="btn">
-            <van-button type="primary" block color="linear-gradient(to right, #4bb0ff, #6149f6)" @click="$router.go(-1)">返回</van-button>
+            <van-button type="primary" block color="#ff7b7b" @click="$router.go(-1)">返回</van-button>
         </div>
     </section>
 </template>
@@ -52,6 +52,13 @@ import Bus from '@/common/js/bus.js';
                     if(!res.data.code){
                         this.list= res.data.data
                         console.log(this.list)
+                    }else{
+                        this.$dialog.alert({
+                            title: '提示',
+                            message: res.data.msg
+                        }).then(() => {
+                            return
+                        });
                     }
                     this.loading = false;
                     this.isLoading = false;
@@ -64,7 +71,7 @@ import Bus from '@/common/js/bus.js';
 </script>
 <style lang="less" scoped>
 .fragmentRemark{
-    background: #ebedf0;
+	
     h2{
         line-height: 240%;
         text-indent: 1em;

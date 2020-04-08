@@ -14,8 +14,8 @@
             </van-radio-group>
         </div>
         <van-goods-action>
-            <van-goods-action-button type="warning" text="返回" @click="onClickButton(0)"/>
-            <van-goods-action-button type="danger" text="确认" @click="onClickButton(1)" />
+            <van-goods-action-button type="warning" text="返回" @click="onClickButton(0)" color="#F5F7F9" style="color:#000"/>
+            <van-goods-action-button type="danger" text="确认" @click="onClickButton(1)"  color="#ff7b7b"/>
         </van-goods-action>
     </section>
 </template>
@@ -105,7 +105,7 @@ import Bus from '@/common/js/bus.js';
                     }else{
                         this.$dialog.alert({
                             title: '提示',
-                            message: '提交失败，请从新提交！'
+                            message: res.data.msg
                         }).then(() => {
                             console.log('提交失败')
                         });

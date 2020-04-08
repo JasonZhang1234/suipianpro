@@ -25,7 +25,7 @@
             />
             <!-- 提交 -->
             <div  class="div_btn">
-                <van-button color="#b72435" block @click="saveClick()" :disabled="btnDisabled">提交</van-button>
+                <van-button color="#ff7b7b" block @click="saveClick()" :disabled="btnDisabled">提交</van-button>
 
             </div>
         </div>
@@ -82,7 +82,9 @@ import Modal from "@/components/Modal"
                             this.$dialog.alert({
                                 title: '提示',
                                 message: res.data.msg
-                            }).then(() => {});
+                            }).then(() => {
+                                this.$router.go(-1)
+                            });
                         }
                     }
                 }).catch(err =>{

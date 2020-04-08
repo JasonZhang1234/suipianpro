@@ -1,21 +1,23 @@
 <template>
     <section>
-       <h2 class="van-doc-demo-block__title" style="margin-top:10px;">{{list.title}}</h2>
-        <van-cell-group v-for="(u,l) in list.content" :key="l">
-            <van-cell :value="u.userName+'（ '+ u.fragList.length +' ）'" center style="text-align:center;" :value-class="van_cell_center" is-link @click="onFragListClick(u)"/>
-        </van-cell-group>
+	   <h2 class="new_h2">{{list.title}}</h2>
+        <div class="frag_list_box">
+            <van-cell-group v-for="(u,l) in list.content" :key="l">
+                <van-cell :value="u.userName+'（ '+ u.fragList.length +' ）'" center style="text-align:center;"  is-link @click="onFragListClick(u)"/>
+            </van-cell-group>
+        </div>
         <div class="btn">
-            <van-button type="primary" block color="linear-gradient(to right, #4bb0ff, #6149f6)" @click="$router.go(-1)">返回</van-button>
+            <van-button type="primary" block color="#ff7b7b" @click="$router.go(-1)">返回</van-button>
         </div>
         <van-popup v-model="fragListShow" :style="{ height: '100%',width:'100%',margin:'-1px 0 0 0'}" position="right" :z-index=200>
-            <h2 class="van-doc-demo-block__title">未完成碎片列表</h2>
+            <h2 class="new_h2">未完成碎片列表</h2>
             <div class="frag_list_box">
                 <van-cell-group v-for="(i,l) in fragListData" :key="l">
                     <van-cell :value="i.fragName" center style="text-align:center;"/>
                 </van-cell-group>
             </div>
             <div class="btn">
-                <van-button type="primary" block color="linear-gradient(to right, #4bb0ff, #6149f6)" @click="fragListShow = false">返回</van-button>
+                <van-button type="primary" block color="#ff7b7b" @click="fragListShow = false">返回</van-button>
             </div>
         </van-popup>
     </section>
@@ -24,6 +26,8 @@
 import { getNoticeList,getNoticeDetail } from "@/api/api"
 import vMaskpage from "@/components/maskpage"
 import Modal from "@/components/Modal"
+import Bus from '@/common/js/bus.js'
+
     export default {
         components:{
             vMaskpage,
@@ -56,7 +60,7 @@ import Modal from "@/components/Modal"
             this.request()
         },
         mounted(){
-
+            Bus.$emit('keepalive',"message");
         },
         methods:{
             /**
@@ -72,19 +76,14 @@ import Modal from "@/components/Modal"
                         res.data.data.content = json
                         this.list= res.data.data
                         console.log(this.list)
-                    }
-                    return 
-                    if(res.data.rows.length){
-                        // 加载状态结束
-                        this.list= res.data.rows
                     }else{
-                        this.finished = true; 
+                        this.$dialog.alert({
+                            title: '提示',
+                            message: res.data.msg
+                        }).then(() => {
+                            return 
+                        });
                     }
-                    if(res.data.total/10 < 1){
-                        this.finished = true; 
-                    }
-                    this.loading = false;
-                    this.isLoading = false;
                 }).catch(err =>{
                     console.log(err)
                 })
@@ -161,8 +160,10 @@ import Modal from "@/components/Modal"
             // alert(2)
         },
         beforeRouteLeave(to, from, next) {
-            // 设置下一个路由的 meta
-            //to.meta.keepAlive = false;  // B 跳转到 A 时，让 A 缓存，即不刷新
+             if(to.path ==="/message"){
+                to.meta.keepAlive = true
+                this.$destroy()
+            }
             next();
         }
     }

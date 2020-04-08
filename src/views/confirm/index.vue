@@ -1,8 +1,16 @@
 <template>
     <section>
         <van-grid clickable :column-num="2">
-            <van-grid-item icon="home-o" text="排班表" to="/queren" />
-            <van-grid-item icon="search" text="独立碎片分发" to="/fenfa" />
+			<van-grid-item text="排班表" to="/queren">
+				<template #icon> 
+				    <i class="iconfont icon-roster" style="font-size: xx-large;color: #646566;"></i>
+				</template>
+			</van-grid-item>
+			<van-grid-item  text="自选碎片分发" to="/fenfa">
+				<template #icon> 
+				    <i class="iconfont icon-zxFragAssign" style="font-size: xx-large;color: #646566;"></i>
+				</template>
+			</van-grid-item>
         </van-grid>
     </section>
 </template>

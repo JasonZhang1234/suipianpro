@@ -1,20 +1,34 @@
 <template>
     <section class="section">
         <!-- <v-nav></v-nav>  -->
-        <div class="content">
+        <keep-alive :include="includedComponents">
+            <router-view></router-view>
+        </keep-alive>
+        <!-- <div class="content">
             <keep-alive>
                 <router-view v-if="$route.meta.keepAlive"></router-view>
             </keep-alive>
             <router-view v-if="!$route.meta.keepAlive"></router-view>
-        </div>
-        
+        </div> -->
     </section>
 </template>
 <script>
     import vNav from './nav'
+    import Bus from '@/common/js/bus.js'
     export default{
         components:{
             vNav
+        },
+        data(){
+            return {
+                includedComponents:"message"
+            }
+        },
+        mounted(){
+            Bus.$on('keepalive', target => {
+                console.log("dfsja"+target)
+                this.includedComponents = target 
+            });  
         }
     }
 </script>

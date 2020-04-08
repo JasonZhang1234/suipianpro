@@ -3,12 +3,12 @@
         <div class="van-doc-demo-block" v-for="(i,index) in list" :key="index">
             <h2 class="van-doc-demo-block__title">{{i.posName}}</h2>
             <van-cell-group v-for="(u,l) in i.userList" :key="l">
-                <van-cell :value="u.userName" center style="text-align:center;" :value-class="van_cell_center"/>
+                <van-cell :value="u.userName" center style="text-align:center;" />
             </van-cell-group>
         </div>
         <van-goods-action>
-            <van-goods-action-button type="warning" text="添加" @click="onClickButton(0)"/>
-            <van-goods-action-button type="danger" text="确认" @click="onClickButton(1)" />
+			<van-goods-action-button type="warning" text="添加" @click="onClickButton(0)" color="#F5F7F9" style="color:#000"/>
+			<van-goods-action-button type="danger" text="确认" @click="onClickButton(1)"  color="#ff7b7b"/>
         </van-goods-action>
     </section>
 </template>
@@ -53,12 +53,12 @@ import { getRosterList } from "@/api/api"
             */
             onClickButton(item){
                 if(item){
-                    this.$dialog.alert({
-                        title: '提示',
-                        message: '确定成功'
-                    }).then(() => {
+                    //this.$dialog.alert({
+                    //    title: '提示',
+                    //    message: '确定成功'
+                    //}).then(() => {
                         this.$router.go(-1)
-                    });
+                    //});
                 }else{
                     this.$dialog.alert({
                         title: '提示',
@@ -103,6 +103,10 @@ import { getRosterList } from "@/api/api"
 }
 .box_roster{
     padding: 0 0 80px 0;
+}
+	
+.van-goods-action{
+	background-color:#fafafa;
 }
 </style>
 

@@ -9,8 +9,8 @@
                         <template slot="title">
                             <span class="custom-title" style="font-size:14px;">{{u.fragName}}</span>
                         </template>
-                        <p @click="threeClassClick(u,index)" style="color:#1989fa;" v-if="u.person">{{u.person}}</p>    
-                        <van-icon name="add" size="18" color="#1989fa" v-else @click="threeClassClick(u,index)"/>
+                        <p @click="threeClassClick(u,index)" style="color:#4b95cb;" v-if="u.person">{{u.person}}</p>    
+                        <van-icon name="add" size="18" color="#4b95cb" v-else @click="threeClassClick(u,index)"/>
                     </van-cell>
                 </van-cell-group>
              </div>
@@ -22,7 +22,7 @@
         </van-popup>
     </div>
     <div class="btn">
-        <van-button type="primary" block color="linear-gradient(to right, #4bb0ff, #6149f6)" @click="$router.go(-1)">返回</van-button>
+        <van-button type="primary" block color="#ff7b7b" @click="$router.go(-1)">返回</van-button>
 
     </div>
     </section>
@@ -93,12 +93,13 @@ import Modal from "@/components/Modal"
             fragmentExclusiveHistory(){
                 //历史排表信息
                 getFragmentExclusiveHistory(this.params).then(res =>{
-                        console.log(res)
                         var map = new Map();
                         res.data.data.forEach(e => {
                             map.set(e.fragId, e);
                         });
                         this.threeClassVal.forEach(e=> {
+                            e.person = "";
+                            e.personId = "";
                             if(map.get(e.fragId)){
                                 e.person = map.get(e.fragId).userName
                                 e.personId = map.get(e.fragId).userId

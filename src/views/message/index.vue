@@ -16,6 +16,7 @@
                 error-text="请求失败，点击重新加载"
                 finished-text="没有更多了"
                 @load="onLoad"
+                :offset="offset"
                 >
                 <!-- <van-cell v-for="item in list" :key="item" :title="item" /> -->
                 <van-panel v-for="(i,index) in list" :title="i.title" :desc="i.senderName" :status="i.noticeDate | isToday" :key="index" @click="onToDetailsClick(i)">
@@ -47,7 +48,10 @@ import { getNoticeList,getNoticeDetail } from "@/api/api"
 import { formatDate } from "@/utils/filter.js"
 import vMaskpage from "@/components/maskpage"
 import Modal from "@/components/Modal"
+import Bus from '@/common/js/bus.js'
+
     export default {
+        name:"message",
         components:{
             vMaskpage,
             Modal
@@ -65,6 +69,7 @@ import Modal from "@/components/Modal"
                 popupShow:false,
                 value1: 0,
                 value2: '',
+                offset:100,
                 option2: [
                     { text: '全部', value: '' },
                     { text: '已读', value: '1' },
@@ -84,7 +89,8 @@ import Modal from "@/components/Modal"
             // this.request()
         },
         mounted(){
-
+            Bus.$emit('keepalive',"message");
+            
         },
         methods:{
             /**
@@ -100,6 +106,14 @@ import Modal from "@/components/Modal"
                             console.log(e)
                             this.list.push(e)
                         }
+                        this.params.page++
+                    }else{
+                        this.$dialog.alert({
+                            title: '提示',
+                            message: res.data.msg
+                        }).then(() => {
+                            return
+                        });
                     }
                     // return 
                     // if(res.data.data.length){
@@ -110,7 +124,7 @@ import Modal from "@/components/Modal"
                     // }
                     this.loading = false;
                     // this.isLoading = false;
-                    if(res.data.data.length<10){
+                    if(res.data.data.length<this.params.limit){
                         console.log("hhah")
                         this.finished = true; 
                     }
@@ -128,6 +142,8 @@ import Modal from "@/components/Modal"
              * 跳转详情click
             */
             onToDetailsClick(item){
+                //设置已读状态
+                item.isRead = 1
                 if(Number(item.type)){
                     this.$router.push({path:'/noticeDetails', query:{noticeId:item.noticeId}})
                 }else{
@@ -142,8 +158,8 @@ import Modal from "@/components/Modal"
                 this.params.noticeDate = formatDate(time);
                 console.log(time.getTime())
                 this.showPicker = false;
+                this.params.page = 1;
                 this.list = []
-                this.params.page = 1
                 //调用接口
                 this.request()
             },
@@ -158,6 +174,8 @@ import Modal from "@/components/Modal"
                 console.log("清除日期");
                 this.valDate='日期选择'
                 this.params.noticeDate = "";
+                this.params.page = 1;
+                this.list = []
                 //调用接口
                 this.request()
 
@@ -166,8 +184,8 @@ import Modal from "@/components/Modal"
             onDropdownChange(value){
                 console.log(value)
                 this.params.isRead = value
+                this.params.page = 1;
                 this.list = []
-                this.params.page = 1
                 //调用接口
                 this.request()
             },
@@ -178,9 +196,7 @@ import Modal from "@/components/Modal"
                 // 异步更新数据
                 this.loading = true;
                 setTimeout(() => {
-                    // this.loading = true;
-
-                    this.params.page++
+                    // this.loading = true
                     this.request();
                 }, 500);
             },
@@ -213,7 +229,15 @@ import Modal from "@/components/Modal"
         },
         beforeRouteLeave(to, from, next) {
             // 设置下一个路由的 meta
-            //to.meta.keepAlive = false;  // B 跳转到 A 时，让 A 缓存，即不刷新
+            // from.meta.keepAlive = true;  // B 跳转到 A 时，让 A 缓存，即不刷新
+            if(to.path ==="/Home"){
+                from.meta.keepAlive = false
+                this.$destroy()
+
+            }
+            if(to.path ==="/noticeDetails"){
+                from.meta.keepAlive = true
+            }
             next();
         }
     }
@@ -253,6 +277,10 @@ import Modal from "@/components/Modal"
 .van-panel__header-value{
     color:#333;
 }
+.van-panel__header-value{
+	font-size:12px;
+
+}
 .is_read{
     position: absolute;
     left: 1%;
@@ -268,6 +296,9 @@ import Modal from "@/components/Modal"
     top: 50px;
     bottom: 0;
     overflow: auto;
+}
+.van-cell__title{
+    min-width:60%;
 }
 </style>
 

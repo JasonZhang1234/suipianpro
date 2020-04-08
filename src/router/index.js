@@ -40,7 +40,7 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ '@/views/Home'),
       meta: {
         title: '主页',
-        keepAlive:true
+        keepAlive:false
       }
     },
     {

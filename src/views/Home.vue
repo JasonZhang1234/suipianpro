@@ -1,26 +1,26 @@
 <template>
     <div>
-        <van-image src="https://img.yzcdn.cn/vant/apple-1.jpg" />
+        <van-image :src="require('../../static/header.jpg')" />
         <van-grid :column-num="3">
             <van-grid-item
                 v-for="(i,index) in list"
                 :key="index"
                 icon="fire"
                 :text="i.name"
-                :to="'/'+i.icon"
+                :to="i.url"
                 :info="i.name=='消息'?count:''"
             >
                 <template #icon> 
-                    <i class="iconfont" :class="'icon-'+i.icon" style="font-size: xx-large;color: #646566;"></i>
+                    <i class="iconfont" :class="i.icon" style="font-size: xx-large;color: #646566;"></i>
                 </template>
             </van-grid-item>
         </van-grid>
     </div>
 </template>
 <script>
-import '@/assets/iconfont/iconfont.css'
-import '@/assets/iconfont/iconfont.js'
-import { getMenuView,getNoticeCount } from "@/api/api"
+import { getMenuView,getNoticeCount,loginTemp } from "@/api/api"
+import Bus from '@/common/js/bus.js'
+
 export default {
   data() {
     return {
@@ -34,12 +34,29 @@ export default {
     };
   },
   mounted() {
+        Bus.$emit('keepalive',"aaa");
     
   },
   created(){
+   		this.login();
       this.request()
   },
   methods: {
+      login(){
+        let loginParam = {
+			username:"020016762",//zg
+          //username:"001200007",//ls
+          //username:"000790033", //kf 
+          //username:"001195593",
+          password:"1",
+          logintype:"0"
+        };
+        loginTemp(loginParam).then(res =>{
+            if(res.code != 0){
+                console.log(res.msg);
+            }
+        })
+      },
       request(){
         getMenuView(this.params).then(res =>{
             if(!res.data.code){
@@ -51,25 +68,25 @@ export default {
         //获取未读消息数
         getNoticeCount().then(res =>{
             if(!res.data.code){
-                this.count = res.data.data.count>99?"99+":res.data.data.count
+                this.count = res.data.data>99?"99+":res.data.data
             }
         }).catch(err =>{
             console.log(err)
         })
       }
   },
+    beforeRouteLeave(to, from, next) {
+        // 设置下一个路由的 meta
+        if(to.path==="/message"){
+            to.meta.keepAlive = true;  // B 跳转到 A 时，让 A 缓存，即不刷新
+        }
+        next();
+    }
 }
 </script>
-<style>
-.icon {
-  width: 1em;
-  height: 1em;
-  vertical-align: -0.15em;
-  fill: currentColor;
-  overflow: hidden;
-}
-</style>
 <style lang="less" scoped>
-
+.van-image{
+	width: 100%;
+}
 </style>
 

@@ -58,4 +58,15 @@ button{
 	background: url('../logo.png') no-repeat center center;
 	background-size: 100% 100%;
   }
+  .icon {
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.15em;
+    fill: currentColor;
+    overflow: hidden;
+  }
+  .new_h2{
+	  padding-top:10px;
+	  text-indent:1em;
+  }
   

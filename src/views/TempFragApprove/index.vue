@@ -5,12 +5,12 @@
             <van-tab title="已审批"></van-tab>
         </van-tabs>
         <!-- :min-date="minDate" -->
-        <van-cell  is-link center :style="valDate=='日期选择'?'text-align:center':'text-align:right'" @click="showPicker = true" v-show="paramsGet.auditStatus != '0'">
+        <van-cell class="van_cell" center :style="valDate=='日期选择'?'text-align:center':'text-align:right'" @click="showPicker = true" v-show="paramsGet.auditStatus != '0'">
             <template #title :style="valDate=='日期选择'?'text-align:center':'text-align:right'">
                 <span class="custom-title">{{valDate}}</span>
             </template>
-            <div style="line-height: inherit;text-align: center;padding: 5px 0 0 0;" v-if="valDate!='日期选择'">
-                <van-icon name="clear" size="20" color="#646566" @click.stop="clearDate" v-if="valDate!='日期选择'" style="line-height: inherit;" />
+            <div style="line-height: inherit;text-align: center;" v-if="valDate!='日期选择'">
+                <van-icon name="clear" size="16" color="#646566" @click.stop="clearDate" v-if="valDate!='日期选择'" style="line-height: inherit;" />
             </div>
         </van-cell>
         <van-popup v-model="showPicker" position="bottom">
@@ -30,17 +30,17 @@
                 finished-text="没有更多了"
                 @load="onLoad"
                 >
-                <van-panel v-for="(i,index) in list" :key="index" :title="i.packageName" :status="i.applyDate | isToday">
+                <van-panel v-for="(i,index) in list" :key="index" :title="i.packageName" :status="i.applyDate | isToday" style="margin: 10px 0 0 0;">
                     <div class="audit_item">
                         <div>申请人：{{i.userName}}</div>
                         <div>编号：{{i.userId}}</div>
                         <div v-show="paramsGet.auditStatus != '0'">审批时间：{{i.auditDate}}</div>
                     </div>
-                    <div slot="footer" class="panel_footer">
-                        <van-button size="small" type="danger" v-if="i.auditStatus==0" @click="onOkClick(i)">通过</van-button>
+                    <div slot="footer" class="panel_footer ">
+                        <van-button size="small" type="danger" v-if="i.auditStatus==0" @click="onOkClick(i)" color="#ff7b7b">通过</van-button>
                         <van-button size="small" v-if="i.auditStatus==0" @click="onCancelClick(i)">驳回</van-button>
-                        <van-button plain type="danger" style="border:none;" size="small" v-if="i.auditStatus==1">已通过</van-button>
-                        <van-button plain type="danger" style="border:none;" size="small" v-if="i.auditStatus==2">已驳回</van-button>
+                        <van-button plain type="danger" style="border:none;" size="small" v-if="i.auditStatus==1" color="#ff7b7b">已通过</van-button>
+                        <van-button plain type="danger" style="border:none;" size="small" v-if="i.auditStatus==2" color="#ff7b7b">已驳回</van-button>
                     </div>
                 </van-panel>
             </van-list>
@@ -75,7 +75,7 @@ import Modal from "@/components/Modal"
                 },
                 paramsPost:{
                     "applyId":"", //申请编号
-                    "auditStatus":""// 2-已通过 3-已驳回  
+                    "auditStatus":""// 1-已通过 2-已驳回  
                 }
             }
         },
@@ -100,17 +100,17 @@ import Modal from "@/components/Modal"
                             console.log(e)
                             this.list.push(e)
                         }
-                    }
-                    this.loading = false;
-                    if(res.data.data.length<10){
-                        console.log("hhah")
-                        this.finished = true; 
+						this.loading = false;
+						if(res.data.data.length<10){
+						    this.finished = true; 
+						}
                     }else{
                         this.$dialog.alert({
                             title: '提示',
                             message: res.data.msg
                         }).then(() => {});
                     }
+                    
                 }).catch(err =>{
                     console.log(err)
                 })
@@ -122,8 +122,11 @@ import Modal from "@/components/Modal"
                 console.log('提交')
                 postApprovalSave(this.paramsPost).then(res =>{
                     if(!res.data.code){
-                        console.log('成功+')
-                        this.$router.go(0)
+						this.$dialog.alert({
+						    title: '提示',
+						    message: '提交成功'
+						}).then(() => {this.$router.go(0)});
+                        
                     }else{
                         this.$dialog.alert({
                             title: '提示',
@@ -155,6 +158,10 @@ import Modal from "@/components/Modal"
                 this.paramsGet.applyDate = formatDate(time);
                 console.log(time.getTime())
                 this.showPicker = false;
+                this.paramsGet.page = 1;
+                this.list = []
+                //调用接口
+                this.request()
             },
 
             /** 
@@ -165,6 +172,7 @@ import Modal from "@/components/Modal"
                 this.valDate='日期选择'
                 this.paramsGet.applyDate = "";
                 this.paramsGet.page = "1";
+                this.list = [];
                 //调用接口
                 this.request()
 
@@ -176,7 +184,7 @@ import Modal from "@/components/Modal"
                 // 异步更新数据
                 this.loading = true;
                 setTimeout(() => {
-                    this.params.page++
+                    this.paramsGet.page++
                     this.request();
                 }, 500);
             },
@@ -194,7 +202,7 @@ import Modal from "@/components/Modal"
                     console.log('确定')
                     // on confirm
                     this.paramsPost.applyId = item.applyId
-                    this.paramsPost.auditStatus = "2"
+                    this.paramsPost.auditStatus = "1"
                     this.http_approvalSave()
                 }).catch(() => {
                     // on cancel
@@ -210,7 +218,7 @@ import Modal from "@/components/Modal"
                 }).then(() => {
                     // on confirm
                     this.paramsPost.applyId = item.applyId
-                    this.paramsPost.auditStatus = "3"
+                    this.paramsPost.auditStatus = "2"
                     this.http_approvalSave()
                 }).catch(() => {
                     // on cancel
@@ -253,9 +261,7 @@ import Modal from "@/components/Modal"
     }
 </script>
 <style lang="less" scoped>
-.van-cell-group{
-    margin: 10px 0 0 0;
-
+.van-cell-group, .van-hairline--top-bottom, .van-panel{
 }
 .panel_footer{
     display:flex;
@@ -275,6 +281,15 @@ import Modal from "@/components/Modal"
 .van-panel .van-cell{
     padding:15px 15px 1px 15px!important;
 }
+
+	
+.van_cell{
+	padding:5px;
+	height:40px;
+}
+.van-cell__title{
+    min-width:60%;
+}
 .van-panel__header-value{
     color:#333;
 }
@@ -285,6 +300,20 @@ import Modal from "@/components/Modal"
     top: 50px;
     bottom: 0;
     overflow: auto;
+}
+.shenhe_list_box .van-cell-group{
+	margin: 10px 0 0 0;
+}
+	
+.van-panel_footer{
+	border-top:none;
+}
+.van-hairline--top::after{
+	border:none;
+}
+.van-panel__header-value{
+	font-size:12px;
+
 }
 </style>
 
