@@ -38,35 +38,14 @@ button{
 [v-cloak]{
 	display: none;
 }
-@font-face {
-	font-family: 'my-icon';
-	src: url('../logo.png') format('truetype');
-  }
-  
-  .my-icon {
-	font-family: 'my-icon';
-  }
-  
-  .my-icon-extra::before {
-	 content:"  "; 
-	/*display: block; */
-	width:20px;
-	height: 20px;
-	/* content: url('../logo.png') ; */
-	vertical-align:middle;
-  	display:inline-block;
-	background: url('../logo.png') no-repeat center center;
-	background-size: 100% 100%;
-  }
-  .icon {
-    width: 1em;
-    height: 1em;
-    vertical-align: -0.15em;
-    fill: currentColor;
-    overflow: hidden;
-  }
-  .new_h2{
-	  padding-top:10px;
-	  text-indent:1em;
-  }
-  
+.icon {
+width: 1em;
+height: 1em;
+vertical-align: -0.15em;
+fill: currentColor;
+overflow: hidden;
+}
+.new_h2{
+	padding-top:10px;
+	text-indent:1em;
+}

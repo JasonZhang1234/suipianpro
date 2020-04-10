@@ -1,6 +1,5 @@
 <template>
     <section class="section">
-        <!-- <v-nav></v-nav>  -->
         <keep-alive :include="includedComponents">
             <router-view></router-view>
         </keep-alive>
@@ -13,11 +12,9 @@
     </section>
 </template>
 <script>
-    import vNav from './nav'
     import Bus from '@/common/js/bus.js'
     export default{
         components:{
-            vNav
         },
         data(){
             return {
