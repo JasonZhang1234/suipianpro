@@ -1,12 +1,13 @@
 <template>
     <section class="box_userKefu">
+        <van-search v-model="value" placeholder="请输入姓名" @input="onSearchInput()"/>
          <div class="van-doc-demo-block">
             <van-radio-group v-model="radio">
                 <!-- 暂不分配 -->
                 <van-cell title="暂不分配" clickable @click="radio = '0'" style="margin:0 0 10px 0;">
                     <van-radio slot="right-icon" name="0" />
                 </van-cell>
-                <van-cell-group v-for="(i,index) in list" :key="index">
+                <van-cell-group v-for="(i,index) in fSearch" :key="index">
                     <van-cell :title="i.name" clickable @click="radio = i.personId">
                         <van-radio slot="right-icon" :name="i.personId" />
                     </van-cell>
@@ -34,10 +35,22 @@ import Bus from '@/common/js/bus.js';
             return {
                 list:[],
                 userList:[],
+                value:"",
                 radio:"",
                 params:{
                     "fragId":"",       
                     "personId": "",
+                }
+            }
+        },
+        computed : {  //设置计算属性
+            fSearch(){
+                if(this.value){
+                    return this.list.filter((item)=>{  //过滤数组元素
+                        return item.name.includes(this.value); //如果包含字符返回true
+                    });
+                }else{
+                    return this.list
                 }
             }
         },
@@ -61,6 +74,7 @@ import Bus from '@/common/js/bus.js';
             request(){
                 getUserKefuList(this.params).then(res =>{
                     this.list = res.data.data
+                    this.fSearch = res.data.data
                     console.log(res);
                     this.loading = false;
                     this.isLoading = false;
@@ -117,7 +131,13 @@ import Bus from '@/common/js/bus.js';
                     console.log(err)
                 })
             },
+            onSearchInput(){
+            //     this.list = this.list.filter((item)=>{  //过滤数组元素
+            //         return item.name.includes(this.value); //如果包含字符返回true
+            //     });
+            }
         },
+        
         //keepalive 生命周期
         activated(){
             this.childView = false;
@@ -156,7 +176,7 @@ import Bus from '@/common/js/bus.js';
         right: 0;
         bottom: 60px;
         overflow: auto;
-        top: 0;
+        top: 45px;
     }
 }
 </style>
